@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "react-query";
 
 import "./index.css";
-import { ChakraProvider } from "@chakra-ui/react";
+import { Box, ChakraProvider } from "@chakra-ui/react";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
 
 import Home from "./Home";
@@ -28,13 +28,16 @@ const Base = ({ children }) => {
       <Sidebar />
       <TopBar />
       <Suspense fallback={<Loading />}>
-        {children}
+        <Box boxShadow='dark-lg' p='6' rounded='md' p={{ base: 3, md: 10 }} m={{ base: 3, md: 10 }}>
+          {children}
+        </Box>
       </Suspense>
     </Fragment>
   );
 };
 
 const App = () => (
+
   <BrowserRouter basename={process.env.NODE_ENV === 'production' ? '/Admin/' : '/'}>
     <QueryClientProvider client={queryClient}>
       <ChakraProvider>
@@ -46,8 +49,8 @@ const App = () => (
             <Route path="/" element={<Base><Home /></Base>} />
             <Route path="/Introduction" element={<Base><Introduction /></Base>} />
             <Route path="/Projects" element={<Base><Projects /></Base>} />
-            <Route path="/Blog" element={<Base><BlogOverview /></Base>} />
-            <Route path="/AddBlog" element={<Base><AddBlog /></Base>} />
+            <Route path="/Blog" element={<Base><BlogOverview token={localStorage.getItem('token')} /></Base>} />
+            <Route path="/AddBlog" element={<Base><AddBlog token={localStorage.getItem('token')} /></Base>} />
           </Route>
         </Routes>
       </ChakraProvider>
