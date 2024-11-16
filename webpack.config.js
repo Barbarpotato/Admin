@@ -9,7 +9,7 @@ const printCompilationMessage = require('./compilation.config.js');
 
 module.exports = (_, argv) => ({
   output: {
-    publicPath: process.env.NODE_ENV === 'production' ? '/Admin/' : '/',
+    publicPath: process.env.NODE_ENV === 'production' ? '/Admin' : '/',
   },
 
   resolve: {

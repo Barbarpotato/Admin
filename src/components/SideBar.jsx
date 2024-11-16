@@ -58,15 +58,14 @@ function SideBar() {
                         </Box>
 
                         <Box>
-                            <Heading py={2} size={'md'}>Main page</Heading>
+                            <Heading py={2} size={'md'}>Project</Heading>
                             <Box paddingLeft={'20px'}>
-                                <Text onClick={() => handleLinkClick('/Introduction', onClose)}
-                                    style={location.pathname === '/Introduction' ? activeLink : {}}
-                                    className="nav-link" py={2}>Introduction</Text>
-                                <Text onClick={() => handleLinkClick('/Projects', onClose)}
+                                <Text onClick={() => handleLinkClick('/ProjectOverview', onClose)}
                                     className="nav-link" py={2}
-                                    style={location.pathname === '/Projects' ? activeLink : {}}
-                                >Projects</Text>
+                                    style={location.pathname === '/ProjectOverview' ? activeLink : {}}>Overview</Text>
+                                <Text onClick={() => handleLinkClick('/AddProject', onClose)}
+                                    style={location.pathname === '/AddProject' ? activeLink : {}}
+                                    className="nav-link" py={2}>Add Project</Text>
                             </Box>
                         </Box>
 
@@ -77,7 +76,7 @@ function SideBar() {
                                     style={location.pathname === '/Blog' ? activeLink : {}}
                                     className="nav-link" py={2}>Overview</Text>
                                 <Text onClick={() => handleLinkClick('/AddBlog', onClose)}
-                                    style={location.pathname === '/addBlog' ? activeLink : {}}
+                                    style={location.pathname === '/AddBlog' ? activeLink : {}}
                                     className="nav-link" py={2}>Add Blog</Text>
                             </Box>
                         </Box>
