@@ -15,8 +15,8 @@ import TopBar from "./components/TopBar";
 import Loading from "./utils/Loading";
 
 // Lazy load the Remote component
-const AddProject = React.lazy(() => import("CMS_Registry/AddProjects"));
-const ProjectsOverview = React.lazy(() => import("CMS_Registry/ProjectsOverview"));
+const AddProject = React.lazy(() => import("CMS_Registry/AddProject"));
+const ProjectOverview = React.lazy(() => import("CMS_Registry/ProjectOverview"));
 const BlogOverview = React.lazy(() => import("CMS_Registry/BlogOverview"));
 const AddBlog = React.lazy(() => import("CMS_Registry/AddBlog"));
 
@@ -47,8 +47,8 @@ const App = () => (
           {/* Protected Routes */}
           <Route element={<Guard />}>
             <Route path="/" element={<Base><Home /></Base>} />
-            <Route path="/ProjectOverview" element={<Base><ProjectsOverview token={localStorage.getItem('token')} /></Base>} />
-            <Route path="/AddProject" element={<Base><AddProject /></Base>} />
+            <Route path="/ProjectOverview" element={<Base><ProjectOverview token={localStorage.getItem('token')} /></Base>} />
+            <Route path="/AddProject" element={<Base><AddProject token={localStorage.getItem('token')} /></Base>} />
             <Route path="/Blog" element={<Base><BlogOverview token={localStorage.getItem('token')} /></Base>} />
             <Route path="/AddBlog" element={<Base><AddBlog token={localStorage.getItem('token')} /></Base>} />
           </Route>
