@@ -1,9 +1,11 @@
 import { Box, Button, Flex, Heading, Input, Text, useToast } from "@chakra-ui/react";
 import { Fragment, useState } from "react";
+import useSession from "../hooks/useSession";
 import { useNavigate } from "react-router-dom";
 import Loading from "../utils/Loading";
 
 const Login = () => {
+    const [_token, setToken] = useSession("token", null);
     const toast = useToast();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
@@ -34,9 +36,9 @@ const Login = () => {
             }
 
             const data = await loginApi.json();
+            setToken(data?.token);
             toast({ title: "Success logging in!", status: "success", isClosable: false });
             setIsLoading(false);
-            localStorage.setItem('token', data?.token);
             navigate('/');
         } catch (error) {
             console.error(error);

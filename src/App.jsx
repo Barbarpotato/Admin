@@ -13,6 +13,7 @@ import Guard from "./auth/Guard";
 import Sidebar from "./components/SideBar";
 import TopBar from "./components/TopBar";
 import Loading from "./utils/Loading";
+import useSession from "./hooks/useSession";
 
 // Lazy load the Remote component
 const AddProject = React.lazy(() => import("CMS_Registry/AddProject"));
@@ -36,27 +37,31 @@ const Base = ({ children }) => {
   );
 };
 
-const App = () => (
+const App = () => {
 
-  <BrowserRouter basename={process.env.NODE_ENV === 'production' ? '/Admin/' : '/'}>
-    <QueryClientProvider client={queryClient}>
-      <ChakraProvider>
-        <Routes>
-          <Route path="/Login" element={<Login />} />
+  const [token, _setToken] = useSession("token", null);
 
-          {/* Protected Routes */}
-          <Route element={<Guard />}>
-            <Route path="/" element={<Base><Home /></Base>} />
-            <Route path="/ProjectOverview" element={<Base><ProjectOverview token={localStorage.getItem('token')} /></Base>} />
-            <Route path="/AddProject" element={<Base><AddProject token={localStorage.getItem('token')} /></Base>} />
-            <Route path="/Blog" element={<Base><BlogOverview token={localStorage.getItem('token')} /></Base>} />
-            <Route path="/AddBlog" element={<Base><AddBlog token={localStorage.getItem('token')} /></Base>} />
-          </Route>
-        </Routes>
-      </ChakraProvider>
-    </QueryClientProvider>
-  </BrowserRouter>
-);
+  return (
+    <BrowserRouter basename={process.env.NODE_ENV === 'production' ? '/Admin/' : '/'}>
+      <QueryClientProvider client={queryClient}>
+        <ChakraProvider>
+          <Routes>
+            <Route path="/Login" element={<Login />} />
+
+            {/* Protected Routes */}
+            <Route element={<Guard />}>
+              <Route path="/" element={<Base><Home /></Base>} />
+              <Route path="/ProjectOverview" element={<Base><ProjectOverview token={token} /></Base>} />
+              <Route path="/AddProject" element={<Base><AddProject token={token} /></Base>} />
+              <Route path="/Blog" element={<Base><BlogOverview token={token} /></Base>} />
+              <Route path="/AddBlog" element={<Base><AddBlog token={token} /></Base>} />
+            </Route>
+          </Routes>
+        </ChakraProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
+  )
+};
 
 const rootElement = document.getElementById("app");
 if (!rootElement) throw new Error("Failed to find the root element");

@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import Loading from '../utils/Loading';
+import useSession from '../hooks/useSession';
 
 function Guard() {
 
-    const [isAuthenticated, setIsAuthenticated] = useState(null);  // Changed initial state to `null` for better handling of loading state
+    const [token, setToken] = useSession("token", null);
 
-    const token = localStorage.getItem('token');
+    const [isAuthenticated, setIsAuthenticated] = useState(null);  // Changed initial state to `null` for better handling of loading state
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -27,7 +28,7 @@ function Guard() {
 
                 if (!response.ok) {
                     setIsAuthenticated(false);  // Token is invalid, set as unauthenticated
-                    localStorage.removeItem('token');  // Optionally clear token
+                    setToken("");
                     return;
                 }
 
