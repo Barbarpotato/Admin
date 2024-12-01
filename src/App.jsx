@@ -18,18 +18,23 @@ import useSession from "./hooks/useSession";
 // Lazy load the Remote component
 const AddProject = React.lazy(() => import("CMS_Registry/AddProject"));
 const ProjectOverview = React.lazy(() => import("CMS_Registry/ProjectOverview"));
+
+const GenerateBlog = React.lazy(() => import("CMS_Registry/GenerateBlog"));
 const BlogOverview = React.lazy(() => import("CMS_Registry/BlogOverview"));
 const AddBlog = React.lazy(() => import("CMS_Registry/AddBlog"));
 
 const queryClient = new QueryClient();
 
-const Base = ({ children }) => {
+const Base = ({ useStyle = true, children }) => {
   return (
     <Fragment>
       <Sidebar />
       <TopBar />
       <Suspense fallback={<Loading />}>
-        <Box boxShadow='dark-lg' rounded='md' p={{ base: 3, md: 10 }} m={{ base: 3, md: 10 }}>
+        <Box boxShadow={useStyle ? 'dark-lg' : ''}
+          rounded={useStyle ? 'md' : ''}
+          p={useStyle ? { base: 3, md: 10 } : ''}
+          m={useStyle ? { base: 3, md: 10 } : ''}>
           {children}
         </Box>
       </Suspense>
@@ -53,6 +58,8 @@ const App = () => {
               <Route path="/" element={<Base><Home /></Base>} />
               <Route path="/ProjectOverview" element={<Base><ProjectOverview token={token} /></Base>} />
               <Route path="/AddProject" element={<Base><AddProject token={token} /></Base>} />
+
+              <Route path="/GeneratedBlog" element={<Base useStyle={false}><GenerateBlog token={token} /></Base>} />
               <Route path="/Blog" element={<Base><BlogOverview token={token} /></Base>} />
               <Route path="/AddBlog" element={<Base><AddBlog token={token} /></Base>} />
             </Route>
