@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 
 import "./index.css";
 import { Box, ChakraProvider } from "@chakra-ui/react";
-import { Route, Routes, BrowserRouter } from "react-router-dom";
+import { Route, Routes, HashRouter } from "react-router-dom";
 
 import Home from "./Home";
 import Login from "./auth/Login";
@@ -47,7 +47,7 @@ const App = () => {
   const [token, _setToken] = useSession("token", null);
 
   return (
-    <BrowserRouter basename={process.env.NODE_ENV === 'production' ? '/Admin/' : '/'}>
+    <HashRouter basename={process.env.NODE_ENV === 'production' ? '/Admin/' : '/'}>
       <QueryClientProvider client={queryClient}>
         <ChakraProvider>
           <Routes>
@@ -66,7 +66,7 @@ const App = () => {
           </Routes>
         </ChakraProvider>
       </QueryClientProvider>
-    </BrowserRouter>
+    </HashRouter>
   )
 };
 
