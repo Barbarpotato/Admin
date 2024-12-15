@@ -19,7 +19,6 @@ import useSession from "./hooks/useSession";
 const AddProject = React.lazy(() => import("CMS_Registry/AddProject"));
 const ProjectOverview = React.lazy(() => import("CMS_Registry/ProjectOverview"));
 
-const GenerateBlog = React.lazy(() => import("CMS_Registry/GenerateBlog"));
 const BlogOverview = React.lazy(() => import("CMS_Registry/BlogOverview"));
 const AddBlog = React.lazy(() => import("CMS_Registry/AddBlog"));
 
@@ -58,8 +57,6 @@ const App = () => {
               <Route path="/" element={<Base><Home /></Base>} />
               <Route path="/ProjectOverview" element={<Base><ProjectOverview token={token} /></Base>} />
               <Route path="/AddProject" element={<Base><AddProject token={token} /></Base>} />
-
-              <Route path="/GeneratedBlog" element={<Base useStyle={false}><GenerateBlog token={token} /></Base>} />
               <Route path="/Blog" element={<Base><BlogOverview token={token} /></Base>} />
               <Route path="/AddBlog" element={<Base><AddBlog token={token} /></Base>} />
             </Route>

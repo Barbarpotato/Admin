@@ -72,9 +72,6 @@ function SideBar() {
                         <Box>
                             <Heading py={2} size={'md'}>Blog Site</Heading>
                             <Box paddingLeft={'20px'}>
-                                <Text onClick={() => handleLinkClick('/GeneratedBlog', onClose)}
-                                    style={location.pathname === '/GeneratedBlog' ? activeLink : {}}
-                                    className="nav-link" py={2}>Generated</Text>
                                 <Text onClick={() => handleLinkClick('/Blog', onClose)}
                                     style={location.pathname === '/Blog' ? activeLink : {}}
                                     className="nav-link" py={2}>Overview</Text>
