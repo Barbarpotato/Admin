@@ -81,6 +81,17 @@ function SideBar() {
                             </Box>
                         </Box>
 
+                        <Box>
+                            <Heading py={2} size={'md'}>Badge Site</Heading>
+                            <Box paddingLeft={'20px'}>
+                                <Text onClick={() => handleLinkClick('/Badge', onClose)}
+                                    style={location.pathname === '/Badge' ? activeLink : {}}
+                                    className="nav-link" py={2}>Overview</Text>
+                                <Text onClick={() => handleLinkClick('/AddBadge', onClose)}
+                                    style={location.pathname === '/AddBadge' ? activeLink : {}}
+                                    className="nav-link" py={2}>Add Badge</Text>
+                            </Box>
+                        </Box>
 
                     </DrawerBody>
                 </DrawerContent>

@@ -22,6 +22,9 @@ const ProjectOverview = React.lazy(() => import("CMS_Registry/ProjectOverview"))
 const BlogOverview = React.lazy(() => import("CMS_Registry/BlogOverview"));
 const AddBlog = React.lazy(() => import("CMS_Registry/AddBlog"));
 
+const BadgeOverview = React.lazy(() => import("CMS_Registry/BadgeOverview"));
+const AddBadge = React.lazy(() => import("CMS_Registry/AddBadge"));
+
 const queryClient = new QueryClient();
 
 const Base = ({ useStyle = true, children }) => {
@@ -59,6 +62,8 @@ const App = () => {
               <Route path="/AddProject" element={<Base><AddProject token={token} /></Base>} />
               <Route path="/Blog" element={<Base><BlogOverview token={token} /></Base>} />
               <Route path="/AddBlog" element={<Base><AddBlog token={token} /></Base>} />
+              <Route path="/Badge" element={<Base><BadgeOverview token={token} /></Base>} />
+              <Route path="/AddBadge" element={<Base><AddBadge token={token} /></Base>} />
             </Route>
           </Routes>
         </ChakraProvider>

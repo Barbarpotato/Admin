@@ -2,7 +2,8 @@ import {
     Spacer, Avatar, WrapItem, Flex, Popover, PopoverTrigger,
     PopoverContent, PopoverHeader, PopoverBody,
     PopoverArrow, PopoverCloseButton, Button,
-    Breadcrumb, BreadcrumbItem, BreadcrumbLink
+    Breadcrumb, BreadcrumbItem, BreadcrumbLink,
+    Heading
 } from '@chakra-ui/react'
 import { useLocation, useNavigate } from 'react-router-dom';
 import React from 'react'
@@ -12,6 +13,9 @@ function TopBar() {
     const location = useLocation()
 
     const locationSegments = location.pathname.split('/').filter(Boolean); // Filter out empty strings
+
+    // function to split string uppercase with whitespace
+    const splitString = (str) => str.replace(/([a-z])([A-Z])/g, '$1 $2');
 
     const navigate = useNavigate()
 
@@ -41,7 +45,9 @@ function TopBar() {
                         return (
                             <BreadcrumbItem key={index}>
                                 <BreadcrumbLink color={'#ff79c6'} onClick={() => navigate(pathToSegment)}>
-                                    {segment}
+                                    <Heading size={"md"}>
+                                        {splitString(segment)}
+                                    </Heading>
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                         );
