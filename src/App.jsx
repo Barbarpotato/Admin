@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 
 import "./index.css";
 import { Box, ChakraProvider } from "@chakra-ui/react";
-import { Route, Routes, BrowserRouter, HashRouter } from "react-router-dom";
+import { Route, Routes, HashRouter } from "react-router-dom";
 
 import Home from "./Home";
 import Login from "./auth/Login";
@@ -16,14 +16,14 @@ import Loading from "./utils/Loading";
 import useSession from "./hooks/useSession";
 
 // Lazy load the Remote component
-const AddProject = React.lazy(() => import("CMS_Registry/AddProject"));
-const ProjectOverview = React.lazy(() => import("CMS_Registry/ProjectOverview"));
+const AddProject = React.lazy(() => import("site_registry/AddProject"));
+const ProjectOverview = React.lazy(() => import("site_registry/ProjectOverview"));
 
-const BlogOverview = React.lazy(() => import("CMS_Registry/BlogOverview"));
-const AddBlog = React.lazy(() => import("CMS_Registry/AddBlog"));
+const BlogOverview = React.lazy(() => import("site_registry/BlogOverview"));
+const AddBlog = React.lazy(() => import("site_registry/AddBlog"));
 
-const BadgeOverview = React.lazy(() => import("CMS_Registry/BadgeOverview"));
-const AddBadge = React.lazy(() => import("CMS_Registry/AddBadge"));
+const BadgeOverview = React.lazy(() => import("site_registry/BadgeOverview"));
+const AddBadge = React.lazy(() => import("site_registry/AddBadge"));
 
 const queryClient = new QueryClient();
 
