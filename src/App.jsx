@@ -58,7 +58,7 @@ const App = () => {
 
             {/* Protected Routes */}
             <Route element={<Guard />}>
-              <Route path="/" element={<Base><DashboardOverview token={token} /></Base>} />
+              <Route path="/" element={<Base><Suspense fallback={<Loading />}><DashboardOverview token={token} /></Suspense></Base>} />
               <Route path="/ProjectOverview" element={<Base><ProjectOverview token={token} /></Base>} />
               <Route path="/AddProject" element={<Base><AddProject token={token} /></Base>} />
               <Route path="/Blog" element={<Base><BlogOverview token={token} /></Base>} />
