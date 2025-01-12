@@ -6,7 +6,6 @@ import "./index.css";
 import { Box, ChakraProvider } from "@chakra-ui/react";
 import { Route, Routes, HashRouter } from "react-router-dom";
 
-import Home from "./Home";
 import Login from "./auth/Login";
 import Guard from "./auth/Guard";
 
@@ -16,6 +15,8 @@ import Loading from "./utils/Loading";
 import useSession from "./hooks/useSession";
 
 // Lazy load the Remote component
+const DashboardOverview = React.lazy(() => import("site_registry/DashboardOverview"));
+
 const AddProject = React.lazy(() => import("site_registry/AddProject"));
 const ProjectOverview = React.lazy(() => import("site_registry/ProjectOverview"));
 
@@ -57,7 +58,7 @@ const App = () => {
 
             {/* Protected Routes */}
             <Route element={<Guard />}>
-              <Route path="/" element={<Base><Home /></Base>} />
+              <Route path="/" element={<Base><DashboardOverview token={token} /></Base>} />
               <Route path="/ProjectOverview" element={<Base><ProjectOverview token={token} /></Base>} />
               <Route path="/AddProject" element={<Base><AddProject token={token} /></Base>} />
               <Route path="/Blog" element={<Base><BlogOverview token={token} /></Base>} />
