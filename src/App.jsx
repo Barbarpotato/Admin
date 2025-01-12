@@ -15,7 +15,6 @@ import Loading from "./utils/Loading";
 import useSession from "./hooks/useSession";
 
 // Lazy load the Remote component
-const DashboardOverview = React.lazy(() => import("site_registry/DashboardOverview"));
 
 const AddProject = React.lazy(() => import("site_registry/AddProject"));
 const ProjectOverview = React.lazy(() => import("site_registry/ProjectOverview"));
@@ -58,7 +57,7 @@ const App = () => {
 
             {/* Protected Routes */}
             <Route element={<Guard />}>
-              <Route path="/" element={<Base><Suspense fallback={<Loading />}><DashboardOverview token={token} /></Suspense></Base>} />
+              <Route path="/" element={<Base>Hello</Base>} />
               <Route path="/ProjectOverview" element={<Base><ProjectOverview token={token} /></Base>} />
               <Route path="/AddProject" element={<Base><AddProject token={token} /></Base>} />
               <Route path="/Blog" element={<Base><BlogOverview token={token} /></Base>} />
