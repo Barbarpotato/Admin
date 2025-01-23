@@ -11,19 +11,21 @@ import Guard from "./auth/Guard";
 
 import Sidebar from "./components/SideBar";
 import TopBar from "./components/TopBar";
-import Loading from "./utils/Loading";
+import Loading from "./components/Loading";
 import useSession from "./hooks/useSession";
 
 // Lazy load the Remote component
 
-const AddProject = React.lazy(() => import("site_registry/AddProject"));
-const ProjectOverview = React.lazy(() => import("site_registry/ProjectOverview"));
+import AddBlog from './exposes/Blog/Add';
+import BlogOverview from './exposes/Blog/Overview';
 
-const BlogOverview = React.lazy(() => import("site_registry/BlogOverview"));
-const AddBlog = React.lazy(() => import("site_registry/AddBlog"));
 
-const BadgeOverview = React.lazy(() => import("site_registry/BadgeOverview"));
-const AddBadge = React.lazy(() => import("site_registry/AddBadge"));
+import AddProject from './exposes/Projects/Add';
+import ProjectOverview from './exposes/Projects/Overview';
+
+
+import AddBadge from './exposes/Badge/Add';
+import BadgeOverview from './exposes/Badge/Overview';
 
 const queryClient = new QueryClient();
 
@@ -32,7 +34,7 @@ const Base = ({ useStyle = true, children }) => {
     <Fragment>
       <Sidebar />
       <TopBar />
-      <Suspense fallback={<Loading />}>
+      <Suspense >
         <Box boxShadow={useStyle ? 'dark-lg' : ''}
           rounded={useStyle ? 'md' : ''}
           p={useStyle ? { base: 3, md: 10 } : ''}

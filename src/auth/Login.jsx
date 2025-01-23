@@ -2,7 +2,7 @@ import { Box, Button, Flex, Heading, Input, Text, useToast } from "@chakra-ui/re
 import { Fragment, useState } from "react";
 import useSession from "../hooks/useSession";
 import { useNavigate } from "react-router-dom";
-import Loading from "../utils/Loading";
+import Loading from "../components/Loading";
 
 const Login = () => {
     const [_token, setToken] = useSession("token", null);

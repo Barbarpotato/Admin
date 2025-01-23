@@ -62,11 +62,6 @@ module.exports = (_, argv) => ({
 
   plugins: [
     new ModuleFederationPlugin({
-      name: "CMS_HOST",
-      filename: "remoteEntry.js",
-      remotes: {
-        site_registry: "site_registry@https://personal-blog-darmajr.web.app/remoteEntry.js",
-      },
       exposes: {},
       shared: {
         ...deps,

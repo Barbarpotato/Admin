@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import Loading from '../utils/Loading';
+import Loading from '../components/Loading';
 import useSession from '../hooks/useSession';
 
 function Guard() {
