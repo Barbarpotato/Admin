@@ -1,12 +1,19 @@
+// Core Modules
 import { Fragment, useState } from 'react'
-import { DeployPortfolio } from '../../api/Hecate/WEBHOOK';
 import { useToast, useDisclosure, Heading, Box, Button } from '@chakra-ui/react';
+
+// Custom Components
 import CustomTable from '../../components/Table';
 import CustomModal from '../../components/Modal';
-import { useDataProjects } from '../../api/Hecate/GET';
-import { DeleteProject } from '../../api/Hecate/DELETE';
 
+// API Modules
+import { DeployPortfolio } from '../../api/Hecate/WEBHOOK';
+import { useDataProjects } from '../../api/projects/GET';
+import { DeleteProject } from '../../api/projects/DELETE';
+
+// CSS
 import '../../index.css'
+
 
 function ProjectsOverview({ token }) {
 
@@ -26,7 +33,7 @@ function ProjectsOverview({ token }) {
             onClick: (project_id) => {
                 try {
                     // ** get the project by id
-                    let getProjectById = projects.find((project) => project.id === project_id)
+                    let getProjectById = projects.find((project) => project.project_id === project_id)
 
                     // Store to localstorage
                     window.localStorage.setItem('headerContent-project', JSON.stringify({
@@ -84,7 +91,7 @@ function ProjectsOverview({ token }) {
             onClick: (project_id) => {
                 try {
                     // ** get the project by id
-                    let getProjectById = projects.find((project) => project.id === project_id)
+                    let getProjectById = projects.find((project) => project.project_id === project_id)
 
                     // ** store to react state
                     setProjectData(getProjectById);
@@ -159,7 +166,7 @@ function ProjectsOverview({ token }) {
                 Prefetch Portfolio Site
             </Button>
             <CustomTable ColumnNames={["Project ID", "Heading", "Text", "Action"]}
-                Rows={projects} RowsAttr={["id", "heading", "text"]} KeyAction="id" ActionList={ActionListTable} />
+                Rows={projects} RowsAttr={["project_id", "heading", "text"]} KeyAction="project_id" ActionList={ActionListTable} />
         </div >
     )
 }

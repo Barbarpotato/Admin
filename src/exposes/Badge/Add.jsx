@@ -1,8 +1,13 @@
-import { PostBadge } from '../../api/Hecate/POST';
+// Core Modules
 import { useToast } from '@chakra-ui/react';
 import { IconContext } from 'react-icons';
 import { FiDelete } from "react-icons/fi";
 import { Box, Input, Button, Flex, Spacer } from '@chakra-ui/react';
+
+// API Modules
+import { PostBadge } from '../../api/badges/POST';
+
+// Custom Hooks
 import useLocalStorage from '../../hooks/useLocalstorage';
 
 function AddBadge({ token }) {

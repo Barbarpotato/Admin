@@ -1,16 +1,21 @@
+// Core Modules
+import { Fragment, useState, useEffect } from 'react'
+import ReactQuill from 'react-quill';
+import { IconContext } from 'react-icons';
+import { FiDelete } from "react-icons/fi";
+import { IoMdArrowDropleft, IoMdArrowDropright } from "react-icons/io";
 import {
     Box, Tabs, TabList, TabPanels, Tab, Step, StepNumber, StepIndicator, StepTitle, TabPanel, Input,
     Button, useToast, useSteps, Stepper, StepStatus, StepIcon, StepDescription, StepSeparator, Flex, Spacer,
     Hide, Text, Image, Heading
 } from '@chakra-ui/react'
-import { FiDelete } from "react-icons/fi";
-import { IoMdArrowDropleft, IoMdArrowDropright } from "react-icons/io";
-import ReactQuill from 'react-quill';
+
+// API Modules
+import { PostBlog } from "../../api/labs/POST"
+
+// CSS
 import 'react-quill/dist/quill.snow.css';
-import { Fragment, useState, useEffect } from 'react'
-import { PostBlog } from "../../api/Cerberry/POST"
 import "../../index.css"
-import { IconContext } from 'react-icons';
 
 function HeaderContent({ headerContent, setHeaderContent }) {
     return (

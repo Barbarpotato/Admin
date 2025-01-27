@@ -1,12 +1,14 @@
+import base_url from "../index.js";
+
 export const DeployLabs = async (token) => {
     if (!token) throw new Error('No token provided')
 
-    const url = `https://cerberry-backend.vercel.app/webhook/trigger-deploy`;
+    const url = `${base_url()}/labs/webhook/deploy`;
 
     const response = await fetch(url, {
         method: 'GET',
         headers: {
-            'Authorization': token
+            'Authorization': `Bearer ${token}`
         }
     })
 

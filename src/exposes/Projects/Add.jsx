@@ -1,14 +1,24 @@
-import {
-    Box, Step, StepNumber, StepIndicator, StepTitle, Input, Button, useToast, useSteps, Stepper, TagCloseButton, Link,
-    StepStatus, StepIcon, StepDescription, StepSeparator, Flex, Spacer, Hide, Heading, HStack, Tag, Textarea, toast
-} from '@chakra-ui/react'
-import { FiDelete } from "react-icons/fi";
-import { IoMdArrowDropleft, IoMdArrowDropright } from "react-icons/io";
+// Core Modules
 import { Fragment, useState } from 'react'
-import { PostProject } from '../../api/Hecate/POST';
-import "../../index.css"
+import { IoMdArrowDropleft, IoMdArrowDropright } from "react-icons/io";
+import { FiDelete } from "react-icons/fi";
 import { IconContext } from 'react-icons';
+import {
+    Box, Step, StepNumber, StepIndicator, StepTitle, Input, Button,
+    useToast, useSteps, Stepper, TagCloseButton, Link,
+    StepStatus, StepIcon, StepDescription, StepSeparator,
+    Flex, Spacer, Hide, Heading, HStack, Tag, Textarea
+} from '@chakra-ui/react'
+
+// Custom Hooks
 import useLocalStorage from '../../hooks/useLocalstorage';
+
+// API Modules
+import { PostProject } from '../../api/projects/POST';
+
+// CSS
+import "../../index.css"
+
 
 function HeaderContent({ headerContent, setHeaderContent }) {
     return (

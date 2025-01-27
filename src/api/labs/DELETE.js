@@ -1,12 +1,14 @@
+import base_url from "../index.js";
+
 export const DeleteBlog = async (blog_id, token) => {
     if (!token) throw new Error('No token provided')
 
-    const url = `https://cerberry-backend.vercel.app/blog_by_id/${blog_id}`;
+    const url = `${base_url()}/labs/${blog_id}`;
 
     const response = await fetch(url, {
         method: 'DELETE',
         headers: {
-            'Authorization': token
+            'Authorization': `Bearer ${token}`
         }
     })
 

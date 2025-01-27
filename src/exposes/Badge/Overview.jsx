@@ -1,11 +1,22 @@
-import { useToast, useDisclosure, Flex, Box, Heading, Text, Avatar } from '@chakra-ui/react';
-import Loading from '../../components/Loading.jsx';
+// Core Modules
+import {
+    useToast, useDisclosure, Flex,
+    Box, Heading, Text, Avatar
+} from '@chakra-ui/react';
 import React, { Fragment, useState } from 'react'
-import { useBadgesData } from '../../api/Hecate/GET';
-import { DeleteBadge } from '../../api/Hecate/DELETE.js';
+
+// API Modules
+import { useBadgesData } from '../../api/badges/GET';
+import { DeleteBadge } from '../../api/badges/DELETE.js';
+
+// Custom Components
 import CustomTable from '../../components/Table.jsx';
 import CustomModal from '../../components/Modal.jsx';
+import Loading from '../../components/Loading.jsx';
+
+// CSS
 import "../../index.css"
+
 
 function BadgeOverview({ token }) {
 
@@ -27,7 +38,7 @@ function BadgeOverview({ token }) {
             label: "Copy to Add Site",
             onClick: async (badge_id) => {
                 try {
-                    const badge_data = badges.find((badge) => badge.id === badge_id)
+                    const badge_data = badges.find((badge) => badge.badges_id === badge_id)
 
                     // re format date
                     const [month, day, year] = badge_data.date.split('/');
@@ -63,7 +74,7 @@ function BadgeOverview({ token }) {
             label: "Details",
             onClick: async (badge_id) => {
                 try {
-                    const badge_data = badges.find((badge) => badge.id === badge_id)
+                    const badge_data = badges.find((badge) => badge.badges_id === badge_id)
                     setBadge(badge_data)
                     onOpen()
                 } catch (err) {
@@ -115,9 +126,9 @@ function BadgeOverview({ token }) {
                 )}
             </CustomModal>
 
-            <CustomTable ColumnNames={["#", 'id', 'title', 'company_name', 'date', 'action']} Rows={badges}
-                RowsAttr={["number", "id", "title", "company_name", "date"]}
-                KeyAction={"id"} ActionList={ActionListTable} />
+            <CustomTable ColumnNames={['id', 'title', 'company_name', 'date', 'action']} Rows={badges}
+                RowsAttr={["badges_id", "title", "company_name", "date"]}
+                KeyAction={"badges_id"} ActionList={ActionListTable} />
 
         </Fragment>
     )

@@ -1,13 +1,20 @@
+// Core Modules
 import React, { Fragment, useState } from 'react'
-import { DeleteBlog } from '../../api/Cerberry/DELETE.js';
-import { DeployPortfolio } from '../../api/Hecate/WEBHOOK.js';
-import { DeployLabs } from '../../api/Cerberry/WEBHOOK.js';
-import { useToast, useDisclosure, Button, Flex, Box } from '@chakra-ui/react';
-import { useDatablogs, fetchBlogById } from '../../api/Cerberry/GET.js'
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { useToast, useDisclosure, Button, Flex, Box } from '@chakra-ui/react';
+
+// API Modules
+import { DeleteBlog } from '../../api/labs/DELETE.js';
+import { DeployLabs } from '../../api/labs/WEBHOOK.js';
+import { useDatablogs, fetchBlogById } from '../../api/labs/GET.js'
+import { DeployPortfolio } from '../../api/Hecate/WEBHOOK.js';
+
+// Component Modules
 import CustomTable from '../../components/Table.jsx';
 import CustomModal from '../../components/Modal.jsx';
 import Loading from '../../components/Loading.jsx';
+
+//
 import "../../index.css"
 
 function BlogOverview({ token }) {
@@ -59,7 +66,7 @@ function BlogOverview({ token }) {
             onClick: async (blog_id) => {
                 try {
                     const blog_data = await fetchBlogById(blog_id);
-                    setBlog(blog_data)
+                    setBlog(blog_data[0])
                     onOpen()
                 } catch (err) {
                     console.error(err)
@@ -120,8 +127,8 @@ function BlogOverview({ token }) {
             <Flex m={2}>
                 <Button size={'sm'} onClick={handleDeployLabs} variant={'solid'} colorScheme={'green'}>Deploy SSG Labs</Button>
             </Flex>
-            <CustomTable ColumnNames={['Blog ID', 'Timestamp', 'Title', 'Short Description', 'Actions']}
-                RowsAttr={["blog_id", "timestamp", "title", "short_description"]} Rows={blogs}
+            <CustomTable ColumnNames={['Blog ID', 'Title', 'timestamp', 'Actions']}
+                RowsAttr={["blog_id", "title", "timestamp"]} Rows={blogs}
                 KeyAction={"blog_id"} ActionList={ActionListTable} />
             <Flex my={2} justifyContent={'center'}>
                 <Button mr={4} colorScheme='purple' variant={'outline'} isDisabled={pageNumber === 1}

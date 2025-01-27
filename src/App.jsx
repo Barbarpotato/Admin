@@ -11,10 +11,7 @@ import Guard from "./auth/Guard";
 
 import Sidebar from "./components/SideBar";
 import TopBar from "./components/TopBar";
-import Loading from "./components/Loading";
 import useSession from "./hooks/useSession";
-
-// Lazy load the Remote component
 
 import AddBlog from './exposes/Blog/Add';
 import BlogOverview from './exposes/Blog/Overview';
