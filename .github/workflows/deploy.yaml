@@ -38,6 +38,7 @@ jobs:
       # Create the .env file dynamically
       - name: Create .env file
         run: |
+          echo "APP_TOKEN=${{ secrets.APP_TOKEN }}" > .env
           echo "NODE_ENV=production" >> .env
 
       - name: Build project
