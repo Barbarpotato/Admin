@@ -1,10 +1,23 @@
-import { Box, Button, Flex, Heading, Input, Text, useToast } from "@chakra-ui/react";
-import { Fragment, useState } from "react";
-import useSession from "../hooks/useSession";
+// Core Modules
+import {
+    Box, Button, Flex, Heading, Input,
+    Text, useToast, useDisclosure, Alert,
+    AlertDescription, CloseButton, Spacer
+} from "@chakra-ui/react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+// Custom Hooks
+import useSession from "../hooks/useSession";
+
+// Custom Components
 import Loading from "../components/Loading";
 
+
 const Login = () => {
+
+    const [year, setYear] = useState(new Date().getFullYear());
+
     const [_token, setToken] = useSession("token", null);
     const toast = useToast();
     const navigate = useNavigate();
@@ -14,6 +27,12 @@ const Login = () => {
         password: "",
         app_token: process.env.APP_TOKEN  // Prefixed environment variable
     });
+
+    const {
+        isOpen: isVisible,
+        onClose,
+        onOpen,
+    } = useDisclosure({ defaultIsOpen: true })
 
     const onChange = (e) => {
         setLoginData({ ...loginData, [e.target.name]: e.target.value });
@@ -50,15 +69,35 @@ const Login = () => {
     if (isLoading) return <Loading />;
 
     return (
-        <Fragment>
-            <Flex height={'90vh'} alignItems="center" justifyContent="center">
-                <Box width={'70%'} className='lighting-effect-pink' borderRadius={'2xl'} p={5}>
-                    <Heading textAlign={'center'} my={2} fontSize={'2xl'}>Login</Heading>
+        <Box height={'80vh'}>
+            {isVisible && (
+                <Alert color={'black'} status='error'>
+                    <Flex width={'100%'} alignItems={'center'} justifyContent={'center'}>
+                        <AlertDescription textAlign={'center'}>
+                            Hello, This service is under Barbarpotato's private management. The service is restricted to public users.
+                        </AlertDescription>
+                        <Spacer />
+                        <CloseButton
+                            alignSelf='flex-start'
+                            position='relative'
+                            right={-1}
+                            top={-1}
+                            onClick={onClose}
+                        />
+                    </Flex>
+
+                </Alert>
+            )}
+
+            <Flex width="100%" height={"100%"} direction={'column'} alignItems={"center"} justifyContent="center">
+                <Box className='lighting-effect-pink' borderRadius={'2xl'} p={5}>
                     <form onSubmit={onSubmit}> {/* Wrap in a form */}
+
+                        <Heading textAlign={'center'} fontSize={'2xl'} my={5}>Admin Panel</Heading>
                         <Box mx={2}>
                             <Text>Username</Text>
                             <Input
-                                placeholder="Username"
+                                placeholder="👤 Username"
                                 borderRadius={'2xl'} my={5} size={'lg'} borderWidth={3}
                                 colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
                                 onChange={onChange}
@@ -72,7 +111,7 @@ const Login = () => {
                         <Box mx={2}>
                             <Text>Password</Text>
                             <Input
-                                placeholder="Password"
+                                placeholder="🔒 Password"
                                 borderRadius={'2xl'} my={5} size={'lg'} borderWidth={3}
                                 colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
                                 onChange={onChange}
@@ -82,13 +121,18 @@ const Login = () => {
                                 required
                             />
                         </Box>
-                        <Button type="submit" isLoading={isLoading} my={3} mx={2} fontWeight={'bold'} colorScheme='purple' color={'black'}>
-                            Login
-                        </Button>
+                        <Box mx={2}>
+                            <Button width={'100%'} type="submit" isLoading={isLoading} my={3} fontWeight={'bold'} colorScheme='purple' color={'black'}>
+                                Log in
+                            </Button>
+                        </Box>
                     </form>
                 </Box>
             </Flex>
-        </Fragment>
+            <Text fontSize={'sm'} textAlign={'center'}>
+                © 2024 - {year} All Rights Reserved
+            </Text>
+        </Box>
     );
 };
 

@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 
 import "./index.css";
 import { Box, ChakraProvider } from "@chakra-ui/react";
-import { Route, Routes, HashRouter } from "react-router-dom";
+import { Route, Routes, HashRouter, Navigate } from "react-router-dom";
 
 import Login from "./auth/Login";
 import Guard from "./auth/Guard";
@@ -52,6 +52,7 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <ChakraProvider>
           <Routes>
+
             <Route path="/Login" element={<Login />} />
 
             {/* Protected Routes */}
@@ -64,6 +65,10 @@ const App = () => {
               <Route path="/Badge" element={<Base><BadgeOverview token={token} /></Base>} />
               <Route path="/AddBadge" element={<Base><AddBadge token={token} /></Base>} />
             </Route>
+
+            {/* Redirect all unknown routes to /Login */}
+            <Route path="*" element={<Navigate to="/Login" />} />
+
           </Routes>
         </ChakraProvider>
       </QueryClientProvider>
