@@ -4,7 +4,7 @@ import {
     Text, useToast, useDisclosure, Alert,
     AlertDescription, CloseButton, Spacer
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Custom Hooks
@@ -16,7 +16,7 @@ import Loading from "../components/Loading";
 
 const Login = () => {
 
-    const [year, setYear] = useState(new Date().getFullYear());
+    const [year, _setYear] = useState(new Date().getFullYear());
 
     const [_token, setToken] = useSession("token", null);
     const toast = useToast();
@@ -69,70 +69,76 @@ const Login = () => {
     if (isLoading) return <Loading />;
 
     return (
-        <Box height={'80vh'}>
-            {isVisible && (
-                <Alert color={'black'} status='error'>
-                    <Flex width={'100%'} alignItems={'center'} justifyContent={'center'}>
-                        <AlertDescription textAlign={'center'}>
-                            Hello, This service is under Barbarpotato's private management. The service is restricted to public users.
-                        </AlertDescription>
-                        <Spacer />
-                        <CloseButton
-                            alignSelf='flex-start'
-                            position='relative'
-                            right={-1}
-                            top={-1}
-                            onClick={onClose}
-                        />
-                    </Flex>
-
-                </Alert>
-            )}
-
-            <Flex width="100%" height={"100%"} direction={'column'} alignItems={"center"} justifyContent="center">
-                <Box className='lighting-effect-pink' borderRadius={'2xl'} p={5}>
-                    <form onSubmit={onSubmit}> {/* Wrap in a form */}
-
-                        <Heading textAlign={'center'} fontSize={'2xl'} my={5}>Admin Panel</Heading>
-                        <Box mx={2}>
-                            <Text>Username</Text>
-                            <Input
-                                placeholder="👤 Username"
-                                borderRadius={'2xl'} my={5} size={'lg'} borderWidth={3}
-                                colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
-                                onChange={onChange}
-                                value={loginData.username}
-                                type="text"
-                                name="username"
-                                required
+        <Fragment>
+            <Box className='stars'></Box>
+            <Box className='stars2'></Box>
+            <Box className='stars3'></Box>
+            <Box height={'80vh'}>
+                {isVisible && (
+                    <Alert color={'black'} status='error'>
+                        <Flex width={'100%'} alignItems={'center'} justifyContent={'center'}>
+                            <AlertDescription textAlign={'center'}>
+                                Hello, This service is under Barbarpotato's private management. The service is restricted to public users.
+                            </AlertDescription>
+                            <Spacer />
+                            <CloseButton
+                                alignSelf='flex-start'
+                                position='relative'
+                                right={-1}
+                                top={-1}
+                                onClick={onClose}
                             />
-                        </Box>
+                        </Flex>
 
-                        <Box mx={2}>
-                            <Text>Password</Text>
-                            <Input
-                                placeholder="🔒 Password"
-                                borderRadius={'2xl'} my={5} size={'lg'} borderWidth={3}
-                                colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
-                                onChange={onChange}
-                                value={loginData.password}
-                                type="password"
-                                name="password"
-                                required
-                            />
-                        </Box>
-                        <Box mx={2}>
-                            <Button width={'100%'} type="submit" isLoading={isLoading} my={3} fontWeight={'bold'} colorScheme='purple' color={'black'}>
-                                Log in
-                            </Button>
-                        </Box>
-                    </form>
-                </Box>
-            </Flex>
-            <Text fontSize={'sm'} textAlign={'center'}>
-                © 2024 - {year} All Rights Reserved
-            </Text>
-        </Box>
+                    </Alert>
+                )}
+
+                <Flex width="100%" height={"100%"} direction={'column'} alignItems={"center"} justifyContent="center">
+                    <Box className='lighting-effect-pink' borderRadius={'2xl'} p={5}>
+                        <form onSubmit={onSubmit}> {/* Wrap in a form */}
+
+                            <Heading textAlign={'center'} fontSize={'2xl'} my={5}>Admin Panel</Heading>
+                            <Box mx={2}>
+                                <Text>Username</Text>
+                                <Input
+                                    placeholder="👤 Username"
+                                    borderRadius={'2xl'} my={5} size={'lg'} borderWidth={3}
+                                    colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
+                                    onChange={onChange}
+                                    value={loginData.username}
+                                    type="text"
+                                    name="username"
+                                    required
+                                />
+                            </Box>
+
+                            <Box mx={2}>
+                                <Text>Password</Text>
+                                <Input
+                                    placeholder="🔒 Password"
+                                    borderRadius={'2xl'} my={5} size={'lg'} borderWidth={3}
+                                    colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
+                                    onChange={onChange}
+                                    value={loginData.password}
+                                    type="password"
+                                    name="password"
+                                    required
+                                />
+                            </Box>
+                            <Box mx={2}>
+                                <Button width={'100%'} type="submit" isLoading={isLoading} my={3} fontWeight={'bold'} colorScheme='purple' color={'black'}>
+                                    Log in
+                                </Button>
+                            </Box>
+                        </form>
+                    </Box>
+                </Flex>
+                <Text fontSize={'sm'} textAlign={'center'}>
+                    © 2024 - {year} All Rights Reserved
+                </Text>
+            </Box>
+        </Fragment>
+
     );
 };
 
