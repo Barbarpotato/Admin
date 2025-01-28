@@ -73,7 +73,7 @@ const Login = () => {
             <Box className='stars'></Box>
             <Box className='stars2'></Box>
             <Box className='stars3'></Box>
-            <Box height={'80vh'}>
+            <Box height={'85vh'}>
                 {isVisible && (
                     <Alert color={'black'} status='error'>
                         <Flex width={'100%'} alignItems={'center'} justifyContent={'center'}>
@@ -89,7 +89,6 @@ const Login = () => {
                                 onClick={onClose}
                             />
                         </Flex>
-
                     </Alert>
                 )}
 
@@ -130,12 +129,16 @@ const Login = () => {
                                     Log in
                                 </Button>
                             </Box>
+
+                            <Box opacity={0.8} mx={2} my={4}>
+                                <Text fontSize={'sm'} textAlign={'center'}>
+                                    © 2024 - {year} All Rights Reserved
+                                </Text>
+                            </Box>
+
                         </form>
                     </Box>
                 </Flex>
-                <Text fontSize={'sm'} textAlign={'center'}>
-                    © 2024 - {year} All Rights Reserved
-                </Text>
             </Box>
         </Fragment>
 
