@@ -28,7 +28,6 @@ const Login = () => {
     const [loginData, setLoginData] = useState({
         username: "",
         password: "",
-        app_token: process.env.APP_TOKEN  // Prefixed environment variable
     });
 
     const {

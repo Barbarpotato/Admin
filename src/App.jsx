@@ -60,7 +60,7 @@ const App = () => {
               <Route path="/" element={<Base>Hello</Base>} />
               <Route path="/ProjectOverview" element={<Base><ProjectOverview token={token} /></Base>} />
               <Route path="/AddProject" element={<Base><AddProject token={token} /></Base>} />
-              <Route path="/Blog" elemenwt={<Base><BlogOverview token={token} /></Base>} />
+              <Route path="/Blog" element={<Base><BlogOverview token={token} /></Base>} />
               <Route path="/AddBlog" element={<Base><AddBlog token={token} /></Base>} />
               <Route path="/Badge" element={<Base><BadgeOverview token={token} /></Base>} />
               <Route path="/AddBadge" element={<Base><AddBadge token={token} /></Base>} />
