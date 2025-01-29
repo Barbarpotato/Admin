@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { PostAuth } from '../api/Coretify/POST';
+import { PostAuth } from '../api/login/POST';
 
 /**
  * Custom hook to check if the user is authenticated.

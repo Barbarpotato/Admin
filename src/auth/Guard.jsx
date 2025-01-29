@@ -1,7 +1,16 @@
+// Core Modules
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
+
+// Custom Components
 import Loading from '../components/Loading';
+
+// Custom Hooks
 import useSession from '../hooks/useSession';
+
+// Custom Modules
+import base_url from '../api/index.js';
+
 
 function Guard() {
 
@@ -18,7 +27,7 @@ function Guard() {
             }
 
             try {
-                const response = await fetch('https://coretify.vercel.app/auth', {
+                const response = await fetch(`${base_url()}/verify/checks`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

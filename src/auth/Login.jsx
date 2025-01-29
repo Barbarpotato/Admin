@@ -10,6 +10,9 @@ import { useNavigate } from "react-router-dom";
 // Custom Hooks
 import useSession from "../hooks/useSession";
 
+// Custom Modules
+import base_url from "../api/index.js";
+
 // Custom Components
 import Loading from "../components/Loading";
 
@@ -42,7 +45,10 @@ const Login = () => {
         e.preventDefault(); // Prevent page reload
         try {
             setIsLoading(true);
-            const loginApi = await fetch("https://coretify.vercel.app/login/client", {
+
+            console.log(base_url())
+
+            const loginApi = await fetch(`${base_url()}/verify/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(loginData),

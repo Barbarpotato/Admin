@@ -1,8 +1,8 @@
+import base_url from "../index.js";
+
 export const PostAuth = async (token) => {
 
-    const url = `https://coretify.vercel.app/auth`;
-
-    const response = await fetch(url, {
+    const response = await fetch(`${base_url()}/verify/checks`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
