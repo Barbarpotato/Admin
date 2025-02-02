@@ -50,7 +50,7 @@ jobs:
         uses: actions/configure-pages@v3
 
       - name: Upload artifact to GitHub Pages
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: './dist'  # Path to the directory where the build output is
 
