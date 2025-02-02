@@ -62,6 +62,9 @@ jobs:
         with:
           path: './dist'  # Make sure this path points to the correct build folder
 
+      - name: Wait for artifact to be available
+        run: sleep 10  # Add a small delay to ensure the artifact is available
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v3
