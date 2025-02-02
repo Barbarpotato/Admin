@@ -6,20 +6,8 @@ on:
       - main  # Trigger on push to the main branch
   workflow_dispatch:  # Allow manual trigger
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: 'pages'
-  cancel-in-progress: true
-
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}  # URL of deployed site
     runs-on: ubuntu-latest
 
     steps:
@@ -53,20 +41,9 @@ jobs:
         run: |
           ls -R dist  # List all files in the dist folder recursively
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-
-      # Upload the build output as an artifact for GitHub Pages
-      - name: Upload artifact to GitHub Pages
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          path: './dist'  # Make sure this path points to the correct build folder
-
-      - name: Wait for artifact to be available
-        run: sleep 10  # Add a small delay to ensure the artifact is available
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v3
-        with:
-          artifact_name: github-pages  # Use the same name as your uploaded artifact
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist  # Path to the build output
+          publish_branch: gh-pages  # Branch to deploy to
