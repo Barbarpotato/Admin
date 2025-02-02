@@ -1,8 +1,9 @@
-name: Deploy static content to Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ['main']  # Trigger on push to the main branch
+    branches: 
+      - main  # Trigger on push to the main branch
   workflow_dispatch:  # Allow manual trigger
 
 # Set permissions for the GitHub Pages deployment
@@ -22,11 +23,12 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}  # URL of deployed site
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Node
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -46,13 +48,17 @@ jobs:
         env:
           NODE_ENV: 'production'
 
+      - name: Check if dist folder exists
+        run: |
+          ls -alh dist  # Confirm if dist folder exists after build
+
       - name: Setup Pages
         uses: actions/configure-pages@v3
 
       - name: Upload artifact to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'  # Path to the directory where the build output is
+          path: './dist'  # Ensure this path points to the correct build output folder
 
       - name: Deploy to GitHub Pages
         id: deployment
