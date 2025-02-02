@@ -1,28 +1,33 @@
+// Core Modules
 import React, { Fragment, Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "react-query";
-
-import "./index.css";
 import { Box, ChakraProvider } from "@chakra-ui/react";
 import { Route, Routes, HashRouter, Navigate } from "react-router-dom";
 
+// Custom Hooks
+import useSession from "./hooks/useSession";
+
+// Auth Modules
 import Login from "./auth/Login";
 import Guard from "./auth/Guard";
 
+// Custom Components
 import Sidebar from "./components/SideBar";
 import TopBar from "./components/TopBar";
-import useSession from "./hooks/useSession";
 
+// Exposes Page
+import Metrics from "./exposes/Dashboard/Metrics";
 import AddBlog from './exposes/Blog/Add';
 import BlogOverview from './exposes/Blog/Overview';
-
-
 import AddProject from './exposes/Projects/Add';
 import ProjectOverview from './exposes/Projects/Overview';
-
-
 import AddBadge from './exposes/Badge/Add';
 import BadgeOverview from './exposes/Badge/Overview';
+
+// CSS
+import "./index.css";
+
 
 const queryClient = new QueryClient();
 
@@ -58,6 +63,7 @@ const App = () => {
             {/* Protected Routes */}
             <Route element={<Guard />}>
               <Route path="/" element={<Base>Hello</Base>} />
+              <Route path="/MetricsLogs" element={<Base><Metrics token={token} /></Base>} />
               <Route path="/ProjectOverview" element={<Base><ProjectOverview token={token} /></Base>} />
               <Route path="/AddProject" element={<Base><AddProject token={token} /></Base>} />
               <Route path="/Blog" element={<Base><BlogOverview token={token} /></Base>} />

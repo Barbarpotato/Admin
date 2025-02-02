@@ -41,6 +41,7 @@
     "react-icons": "^5.0.0",
     "react-query": "^3.39.3",
     "react-quill": "^2.0.0",
-    "react-router-dom": "^6.28.0"
+    "react-router-dom": "^6.28.0",
+    "recharts": "^2.15.1"
   }
 }
