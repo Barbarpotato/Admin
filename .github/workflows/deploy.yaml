@@ -47,3 +47,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist  # Path to the build output
           publish_branch: gh-pages  # Branch to deploy to
+          keep_files: false  # Ensure the branch is cleaned before deployment
