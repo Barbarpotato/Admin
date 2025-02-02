@@ -6,13 +6,11 @@ on:
       - main  # Trigger on push to the main branch
   workflow_dispatch:  # Allow manual trigger
 
-# Set permissions for the GitHub Pages deployment
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow one concurrent deployment
 concurrency:
   group: 'pages'
   cancel-in-progress: true
@@ -37,7 +35,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Create the .env file dynamically
       - name: Create .env file
         run: |
           echo "APP_TOKEN=${{ secrets.APP_TOKEN }}" > .env
@@ -55,11 +52,15 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v3
 
+      # Upload the build output as an artifact for GitHub Pages
       - name: Upload artifact to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'  # Ensure this path points to the correct build output folder
+          path: './dist'  # Make sure this path points to the correct build folder
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v3
+        with:
+          # Add the correct artifact name, it should match the uploaded artifact name
+          artifact_name: github-pages  # Use the same name as your uploaded artifact
