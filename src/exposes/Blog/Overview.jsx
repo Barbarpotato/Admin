@@ -5,9 +5,9 @@ import { useToast, useDisclosure, Button, Flex, Box } from '@chakra-ui/react';
 
 // API Modules
 import { DeleteBlog } from '../../api/labs/DELETE.js';
-import { DeployLabs } from '../../api/labs/WEBHOOK.js';
+import { DeployLabs } from '../../api/webhook/labs.js';
+import { DeployPortfolio } from '../../api/webhook/portfolio.js';
 import { useDatablogs, fetchBlogById } from '../../api/labs/GET.js'
-import { DeployPortfolio } from '../../api/Hecate/WEBHOOK.js';
 
 // Component Modules
 import CustomTable from '../../components/Table.jsx';

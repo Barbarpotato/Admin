@@ -31,7 +31,7 @@ function TopBar() {
                     locationSegments.length === 0 &&
                     <BreadcrumbItem>
                         <BreadcrumbLink color={'#ff79c6'} onClick={() => navigate('/')}>
-                            Home
+                            Deployments
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                 }

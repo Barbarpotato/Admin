@@ -7,7 +7,7 @@ import CustomTable from '../../components/Table';
 import CustomModal from '../../components/Modal';
 
 // API Modules
-import { DeployPortfolio } from '../../api/Hecate/WEBHOOK';
+import { DeployPortfolio } from '../../api/webhook/portfolio';
 import { useDataProjects } from '../../api/projects/GET';
 import { DeleteProject } from '../../api/projects/DELETE';
 

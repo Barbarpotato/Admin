@@ -53,7 +53,7 @@ function SideBar() {
                             <Box paddingLeft={'20px'}>
                                 <Text onClick={() => handleLinkClick('/', onClose)}
                                     style={location.pathname === '/' ? activeLink : {}}
-                                    className="nav-link" py={2}>Home</Text>
+                                    className="nav-link" py={2}>Deployments</Text>
 
                                 <Text onClick={() => handleLinkClick('/MetricsLogs', onClose)}
                                     style={location.pathname === '/MetricsLogs' ? activeLink : {}}

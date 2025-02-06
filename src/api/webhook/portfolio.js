@@ -1,12 +1,14 @@
+import base_url from "../index.js";
+
 export const DeployPortfolio = async (token) => {
     if (!token) throw new Error('No token provided')
 
-    const url = `https://hecate-cms.vercel.app/api/webhook`;
+    const url = `${base_url()}/webhook/deploy-portfolio`;
 
     const response = await fetch(url, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
-            'Authorization': token
+            'Authorization': `Bearer ${token}`
         }
     })
 
