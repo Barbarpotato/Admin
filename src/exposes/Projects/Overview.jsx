@@ -7,7 +7,6 @@ import CustomTable from '../../components/Table';
 import CustomModal from '../../components/Modal';
 
 // API Modules
-import { DeployPortfolio } from '../../api/webhook/portfolio';
 import { useDataProjects } from '../../api/projects/GET';
 import { DeleteProject } from '../../api/projects/DELETE';
 
@@ -126,23 +125,6 @@ function ProjectsOverview({ token }) {
         }
     ]
 
-    const handleDeployPortfolio = async () => {
-        try {
-            await DeployPortfolio(token);
-            toast({
-                title: `Prefetching In Progress`,
-                status: "success",
-            })
-        } catch (err) {
-            console.error(err)
-            toast({
-                title: `Something went wrong`,
-                status: "error",
-            })
-        }
-    }
-
-
     return (
         <div>
             <CustomModal modalTitle='Project Detail' modalSize='3xl' isOpen={isOpenProjectModal} onClose={onCloseProjectModal} >
@@ -162,9 +144,6 @@ function ProjectsOverview({ token }) {
                     </Box>
                 </Fragment>
             </CustomModal>
-            <Button size={'sm'} onClick={handleDeployPortfolio} variant={'solid'} colorScheme={'green'}>
-                Prefetch Portfolio Site
-            </Button>
             <CustomTable ColumnNames={["Project ID", "Heading", "Text", "Action"]}
                 Rows={projects} RowsAttr={["project_id", "heading", "text"]} KeyAction="project_id" ActionList={ActionListTable} />
         </div >

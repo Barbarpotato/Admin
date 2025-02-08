@@ -5,8 +5,6 @@ import { useToast, useDisclosure, Button, Flex, Box } from '@chakra-ui/react';
 
 // API Modules
 import { DeleteBlog } from '../../api/labs/DELETE.js';
-import { DeployLabs } from '../../api/webhook/labs.js';
-import { DeployPortfolio } from '../../api/webhook/portfolio.js';
 import { useDatablogs, fetchBlogById } from '../../api/labs/GET.js'
 
 // Component Modules
@@ -98,23 +96,6 @@ function BlogOverview({ token }) {
         }
     ]
 
-    const handleDeployLabs = async () => {
-        try {
-            await DeployPortfolio(token);
-            await DeployLabs(token);
-            toast({
-                title: `Deployment In Progress`,
-                status: "success",
-            })
-        } catch (err) {
-            console.error(err)
-            toast({
-                title: `Something went wrong`,
-                status: "error",
-            })
-        }
-    }
-
     return (
         <Fragment>
             <CustomModal modalTitle='Blog Detail' modalSize='6xl' isOpen={isOpen} onClose={onClose} >
@@ -124,9 +105,6 @@ function BlogOverview({ token }) {
                     </Box>
                 )}
             </CustomModal>
-            <Flex m={2}>
-                <Button size={'sm'} onClick={handleDeployLabs} variant={'solid'} colorScheme={'green'}>Deploy SSG Labs</Button>
-            </Flex>
             <CustomTable ColumnNames={['Blog ID', 'Title', 'timestamp', 'Actions']}
                 RowsAttr={["blog_id", "title", "timestamp"]} Rows={blogs}
                 KeyAction={"blog_id"} ActionList={ActionListTable} />
