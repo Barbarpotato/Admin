@@ -99,7 +99,7 @@ function Deployments({ token }) {
                                                 <Td style={{ color: item.conclusion === "success" ? "green" : "red" }}>
                                                     {item.conclusion}
                                                 </Td>
-                                                <Td><a style={{ textDecoration: "underline" }} href={item.url} target="_blank">Link</a></Td>
+                                                <Td><a style={{ textDecoration: "underline" }} href={item.html_url} target="_blank">Link</a></Td>
                                             </Tr>
                                         ))
                                     }
