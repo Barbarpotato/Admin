@@ -1,7 +1,7 @@
 // Core Modules
 import React, { Fragment, useState } from 'react'
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { useToast, useDisclosure, Button, Flex, Box } from '@chakra-ui/react';
+import { useToast, useDisclosure, Button, Flex, Box, Text, Spacer, Input } from '@chakra-ui/react';
 
 // API Modules
 import { DeleteBlog } from '../../api/labs/DELETE.js';
@@ -19,10 +19,16 @@ function BlogOverview({ token }) {
 
     // ** internal state
     const [pageNumber, setPageNumber] = useState(1);
+    const [searchParams, setSearchParams] = useState({
+        title: "",
+        slug: "",
+        blog_id: "",
+    });
+
     const [blog, setBlog] = useState({});
 
     // ** react query api call
-    const { data: blogs, isLoading, isError, refetch } = useDatablogs(pageNumber);
+    const { data: blogs, isLoading, isError, refetch } = useDatablogs({ page: pageNumber, ...searchParams });
 
     // ** chakra staff
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -31,12 +37,19 @@ function BlogOverview({ token }) {
     if (isLoading) return <Loading />
     if (isError) return 'Error loading blogs';
 
+    const handleSearchQuery = (e) => {
+        setPageNumber(1); // Reset to first page when searching
+        setSearchParams({
+            title: e.target.title.value
+        });
+    };
+
     const ActionListTable = [
         {
             label: "Copy Content to Add Site",
             onClick: async (blog_id) => {
                 try {
-                    const blog_by_id = blogs.filter((blog) => blog.blog_id === blog_id)[0];
+                    const blog_by_id = blogs.data.filter((blog) => blog.blog_id === blog_id)[0];
                     // set this data to localstorage
                     window.localStorage.setItem('headerContent', JSON.stringify({
                         title: blog_by_id.title,
@@ -94,7 +107,7 @@ function BlogOverview({ token }) {
                 }
             }
         }
-    ]
+    ];
 
     return (
         <Fragment>
@@ -105,13 +118,33 @@ function BlogOverview({ token }) {
                     </Box>
                 )}
             </CustomModal>
+
+
+            <form onSubmit={handleSearchQuery}>
+                <Flex alignItems={'center'} my={8} justifyContent={'center'}>
+                    <Spacer />
+                    <Input width={{ base: '100%', lg: '25%' }} borderLeftRadius={'2xl'} borderRightRadius={0} size={'md'} borderWidth={3} colorScheme='purple' borderColor={"#536189"}
+                        focusBorderColor={"#ff79c6"} placeholder='Search By title...' name='title' />
+                    <Button borderLeftRadius={0} size={'md'} colorScheme='purple'
+                        type='submit'>
+                        Search
+                    </Button>
+                </Flex>
+            </form>
+
             <CustomTable ColumnNames={['Blog ID', 'Title', 'timestamp', 'Actions']}
-                RowsAttr={["blog_id", "title", "timestamp"]} Rows={blogs}
+                RowsAttr={["blog_id", "title", "timestamp"]} Rows={blogs.data}
                 KeyAction={"blog_id"} ActionList={ActionListTable} />
-            <Flex my={2} justifyContent={'center'}>
-                <Button mr={4} colorScheme='purple' variant={'outline'} isDisabled={pageNumber === 1}
+
+            <Flex alignItems={'center'} my={8} justifyContent={'center'}>
+                <Spacer />
+                <Button mr={4} colorScheme='purple' isDisabled={pageNumber === 1}
                     onClick={() => setPageNumber(prev => prev - 1)}><IoIosArrowBack /></Button>
-                <Button colorScheme='purple' variant={'outline'}
+                <Text>
+                    Page {blogs.current_page} of {blogs.last_page}
+                </Text>
+                <Button ml={4} colorScheme='purple'
+                    isDisabled={pageNumber === blogs.last_page}
                     onClick={() => setPageNumber(prev => prev + 1)}><IoIosArrowForward /></Button>
             </Flex>
 

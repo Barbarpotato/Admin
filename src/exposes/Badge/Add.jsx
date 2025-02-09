@@ -96,7 +96,7 @@ function AddBadge({ token }) {
                 my={2} placeholder='Your Certificate Url' onChange={(e) => setContent({ ...content, credential_url: e.target.value })} value={content.credential_url} />
             <label>Date</label>
             <Input borderRadius={'2xl'} size={'lg'} borderWidth={3} colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
-                my={2} placeholder='Date. Format: DD-MM-YYYY'
+                my={2} placeholder='Date. Format: MM-DD-YYYY'
                 onChange={(e) => {
                     setContent({ ...content, date: e.target.value });
                 }}

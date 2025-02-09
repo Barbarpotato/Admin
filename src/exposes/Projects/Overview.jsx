@@ -1,6 +1,10 @@
 // Core Modules
 import { Fragment, useState } from 'react'
-import { useToast, useDisclosure, Heading, Box, Button } from '@chakra-ui/react';
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import {
+    useToast, useDisclosure, Heading, Box, Button,
+    Flex, Spacer, Input, Text
+} from '@chakra-ui/react';
 
 // Custom Components
 import CustomTable from '../../components/Table';
@@ -16,9 +20,14 @@ import '../../index.css'
 
 function ProjectsOverview({ token }) {
 
-    const { data: projects, isLoading, isError, refetch } = useDataProjects();
-
+    // ** internal state
     const [projectData, setProjectData] = useState({});
+    const [pageNumber, setPageNumber] = useState(1);
+    const [searchParams, setSearchParams] = useState({
+        heading: "",
+    });
+
+    const { data: projects, isLoading, isError, refetch } = useDataProjects(pageNumber, 8, searchParams.heading);
 
     const { isOpen: isOpenProjectModal, onOpen: onOpenProjectModal, onClose: onCloseProjectModal } = useDisclosure();
     const toast = useToast();
@@ -26,13 +35,20 @@ function ProjectsOverview({ token }) {
     if (isLoading) return 'Loading...'
     if (isError) return 'Error loading projects'
 
+    const handleSearchQuery = (e) => {
+        setPageNumber(1); // Reset to first page when searching
+        setSearchParams({
+            heading: e.target.title.value
+        });
+    };
+
     const ActionListTable = [
         {
             label: "Copy Content to Add Site",
             onClick: (project_id) => {
                 try {
                     // ** get the project by id
-                    let getProjectById = projects.find((project) => project.project_id === project_id)
+                    let getProjectById = projects.data.find((project) => project.project_id === project_id)
 
                     // Store to localstorage
                     window.localStorage.setItem('headerContent-project', JSON.stringify({
@@ -90,7 +106,7 @@ function ProjectsOverview({ token }) {
             onClick: (project_id) => {
                 try {
                     // ** get the project by id
-                    let getProjectById = projects.find((project) => project.project_id === project_id)
+                    let getProjectById = projects.data.find((project) => project.project_id === project_id)
 
                     // ** store to react state
                     setProjectData(getProjectById);
@@ -144,8 +160,36 @@ function ProjectsOverview({ token }) {
                     </Box>
                 </Fragment>
             </CustomModal>
+
+
+            <form onSubmit={handleSearchQuery}>
+                <Flex alignItems={'center'} my={8} justifyContent={'center'}>
+                    <Spacer />
+                    <Input width={{ base: '100%', lg: '25%' }} borderLeftRadius={'2xl'} borderRightRadius={0} size={'md'} borderWidth={3} colorScheme='purple' borderColor={"#536189"}
+                        focusBorderColor={"#ff79c6"} placeholder='Search By heading...' name='title' />
+                    <Button borderLeftRadius={0} size={'md'} colorScheme='purple'
+                        type='submit'>
+                        Search
+                    </Button>
+                </Flex>
+            </form>
+
             <CustomTable ColumnNames={["Project ID", "Heading", "Text", "Action"]}
-                Rows={projects} RowsAttr={["project_id", "heading", "text"]} KeyAction="project_id" ActionList={ActionListTable} />
+                Rows={projects.data} RowsAttr={["project_id", "heading", "text"]} KeyAction="project_id" ActionList={ActionListTable} />
+
+
+            <Flex alignItems={'center'} my={8} justifyContent={'center'}>
+                <Spacer />
+                <Button mr={4} colorScheme='purple' isDisabled={pageNumber === 1}
+                    onClick={() => setPageNumber(prev => prev - 1)}><IoIosArrowBack /></Button>
+                <Text>
+                    Page {projects.current_page} of {projects.last_page}
+                </Text>
+                <Button ml={4} colorScheme='purple'
+                    isDisabled={pageNumber === projects.last_page}
+                    onClick={() => setPageNumber(prev => prev + 1)}><IoIosArrowForward /></Button>
+            </Flex>
+
         </div >
     )
 }

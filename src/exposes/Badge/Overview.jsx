@@ -1,8 +1,9 @@
 // Core Modules
 import {
-    useToast, useDisclosure, Flex,
-    Box, Heading, Text, Avatar
+    useToast, useDisclosure, Flex, Button,
+    Box, Heading, Text, Avatar, Spacer, Input
 } from '@chakra-ui/react';
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import React, { Fragment, useState } from 'react'
 
 // API Modules
@@ -23,8 +24,12 @@ function BadgeOverview({ token }) {
 
     // ** internal state
     const [badge, setBadge] = useState({});
+    const [pageNumber, setPageNumber] = useState(1);
+    const [searchParams, setSearchParams] = useState({
+        title: "",
+    });
 
-    const { data: badges, isLoading, isError, refetch } = useBadgesData();
+    const { data: badges, isLoading, isError, refetch } = useBadgesData(pageNumber, 8, searchParams.title);
 
     // ** chakra staff
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -33,12 +38,19 @@ function BadgeOverview({ token }) {
     if (isLoading) return <Loading />
     if (isError) return 'Error loading badges';
 
+    const handleSearchQuery = (e) => {
+        setPageNumber(1); // Reset to first page when searching
+        setSearchParams({
+            title: e.target.title.value
+        });
+    };
+
     const ActionListTable = [
         {
             label: "Copy to Add Site",
             onClick: async (badge_id) => {
                 try {
-                    const badge_data = badges.find((badge) => badge.badges_id === badge_id)
+                    const badge_data = badges.data.find((badge) => badge.badges_id === badge_id)
 
                     // re format date
                     const [month, day, year] = badge_data.date.split('/');
@@ -74,7 +86,7 @@ function BadgeOverview({ token }) {
             label: "Details",
             onClick: async (badge_id) => {
                 try {
-                    const badge_data = badges.find((badge) => badge.badges_id === badge_id)
+                    const badge_data = badges.data.find((badge) => badge.badges_id === badge_id)
                     setBadge(badge_data)
                     onOpen()
                 } catch (err) {
@@ -126,9 +138,35 @@ function BadgeOverview({ token }) {
                 )}
             </CustomModal>
 
-            <CustomTable ColumnNames={['id', 'title', 'company_name', 'date', 'action']} Rows={badges}
+            <form onSubmit={handleSearchQuery}>
+                <Flex alignItems={'center'} my={8} justifyContent={'center'}>
+                    <Spacer />
+                    <Input width={{ base: '100%', lg: '25%' }} borderLeftRadius={'2xl'} borderRightRadius={0} size={'md'} borderWidth={3} colorScheme='purple' borderColor={"#536189"}
+                        focusBorderColor={"#ff79c6"} placeholder='Search By title...' name='title' />
+                    <Button borderLeftRadius={0} size={'md'} colorScheme='purple'
+                        type='submit'>
+                        Search
+                    </Button>
+                </Flex>
+            </form>
+
+            <CustomTable ColumnNames={['id', 'title', 'company_name', 'date', 'action']} Rows={badges.data}
                 RowsAttr={["badges_id", "title", "company_name", "date"]}
                 KeyAction={"badges_id"} ActionList={ActionListTable} />
+
+
+            <Flex alignItems={'center'} my={8} justifyContent={'center'}>
+                <Spacer />
+                <Button mr={4} colorScheme='purple' isDisabled={pageNumber === 1}
+                    onClick={() => setPageNumber(prev => prev - 1)}><IoIosArrowBack /></Button>
+                <Text>
+                    Page {badges.current_page} of {badges.last_page}
+                </Text>
+                <Button ml={4} colorScheme='purple'
+                    isDisabled={pageNumber === badges.last_page}
+                    onClick={() => setPageNumber(prev => prev + 1)}><IoIosArrowForward /></Button>
+            </Flex>
+
 
         </Fragment>
     )

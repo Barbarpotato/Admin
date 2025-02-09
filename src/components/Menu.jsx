@@ -5,7 +5,7 @@ import React, { Fragment } from 'react'
 function CustomMenu({ MenuItemList, KeyAction }) {
     return (
         <Menu>
-            <MenuButton colorScheme='purple' as={Button}>
+            <MenuButton colorScheme='purple' as={Button} variant={'outline'}>
                 Actions
             </MenuButton>
             <MenuList bg={"#292b37"}>
