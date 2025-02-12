@@ -77,7 +77,7 @@ function BlogOverview({ token }) {
             onClick: async (blog_id) => {
                 try {
                     const blog_data = await fetchBlogById(blog_id);
-                    setBlog(blog_data[0])
+                    setBlog(blog_data.data[0])
                     onOpen()
                 } catch (err) {
                     console.error(err)

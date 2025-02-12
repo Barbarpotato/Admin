@@ -52,7 +52,7 @@ export const useDatablogs = ({ page, title = "", slug = "", blog_id = "" }) => {
 
 
 export const fetchBlogById = async (blog_id) => {
-    const url = `${base_url()}/labs/search?blog_id=${blog_id}`;
+    const url = `${base_url()}/labs?blog_id=${blog_id}`;
 
     const response = await fetch(url, {
         method: 'GET',
