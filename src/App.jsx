@@ -21,6 +21,7 @@ import Deployments from "./exposes/Dashboard/Deployments";
 import Metrics from "./exposes/Dashboard/Metrics";
 import AddBlog from './exposes/Blog/Add';
 import BlogOverview from './exposes/Blog/Overview';
+import ImageBlog from './exposes/Blog/Image';
 import AddProject from './exposes/Projects/Add';
 import ProjectOverview from './exposes/Projects/Overview';
 import AddBadge from './exposes/Badge/Add';
@@ -68,6 +69,7 @@ const App = () => {
               <Route path="/ProjectOverview" element={<Base><ProjectOverview token={token} /></Base>} />
               <Route path="/AddProject" element={<Base><AddProject token={token} /></Base>} />
               <Route path="/Blog" element={<Base><BlogOverview token={token} /></Base>} />
+              <Route path="/ImageBlog" element={<Base><ImageBlog token={token} /></Base>} />
               <Route path="/AddBlog" element={<Base><AddBlog token={token} /></Base>} />
               <Route path="/Badge" element={<Base><BadgeOverview token={token} /></Base>} />
               <Route path="/AddBadge" element={<Base><AddBadge token={token} /></Base>} />

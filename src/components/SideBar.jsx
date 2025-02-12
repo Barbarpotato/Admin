@@ -79,6 +79,9 @@ function SideBar() {
                                 <Text onClick={() => handleLinkClick('/Blog', onClose)}
                                     style={location.pathname === '/Blog' ? activeLink : {}}
                                     className="nav-link" py={2}>Overview</Text>
+                                <Text onClick={() => handleLinkClick('/ImageBlog', onClose)}
+                                    style={location.pathname === '/ImageBlog' ? activeLink : {}}
+                                    className="nav-link" py={2}>Image Blog</Text>
                                 <Text onClick={() => handleLinkClick('/AddBlog', onClose)}
                                     style={location.pathname === '/AddBlog' ? activeLink : {}}
                                     className="nav-link" py={2}>Add Blog</Text>
