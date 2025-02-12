@@ -122,12 +122,15 @@ function ImageBlog({ token }) {
                             return (
                                 <Flex key={index} direction="row" align="center" justify="space-between" w="100%" p={2} borderBottom="1px solid #e2e8f0">
                                     <CiImageOn size={20} />
-                                    <Text ml={4} flex="1">{image.name}</Text>
+                                    <Text width={{ base: '100%', md: 'auto' }} fontSize={{ base: 'sm', md: 'md' }} ml={4}>
+                                        {window.innerWidth > 1280 ? image.name : (image.name.length > 20 ? image.name.slice(0, 20) + "..." : image.name)}
+                                    </Text>
+                                    <Spacer />
                                     <a href={image.url} target="_blank" rel="noopener noreferrer">
-                                        <Button textDecoration={'underline'} variant={'unstyled'} colorScheme='purple'>Link</Button>
+                                        <Button size={{ base: 'sm', md: 'md' }} textDecoration={'underline'} variant={'unstyled'} colorScheme='purple'>Link</Button>
                                     </a>
-                                    <Button onClick={() => handleDelete(image.name)} colorScheme='red' color={'red.500'}
-                                        variant={'unstyled'} ml={2}>Delete</Button>
+                                    <Button size={{ base: 'sm', md: 'md' }} onClick={() => handleDelete(image.name)} colorScheme='red' color={'red.500'}
+                                        variant={'unstyled'} ml={{ base: 0, md: 2 }}>Delete</Button>
                                 </Flex>
                             );
                         })}
