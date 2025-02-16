@@ -50,6 +50,7 @@ function BlogOverview({ token }) {
             onClick: async (blog_id) => {
                 try {
                     const blog_by_id = blogs.data.filter((blog) => blog.blog_id === blog_id)[0];
+                    console.log(blog_by_id)
                     // set this data to localstorage
                     window.localStorage.setItem('headerContent', JSON.stringify({
                         title: blog_by_id.title,

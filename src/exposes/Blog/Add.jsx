@@ -17,29 +17,27 @@ import { PostBlog } from "../../api/labs/POST"
 import 'react-quill/dist/quill.snow.css';
 import "../../index.css"
 
-// Custom Hook
-import useLocalStorage from '../../hooks/useLocalstorage';
 
-function HeaderContent({ headerContent, setHeaderContent }) {
+function HeaderContent({ headerContent, updateHeaderContent }) {
     return (
         <Box my={4}>
             <label>Title</label>
             <Input borderRadius={'2xl'} size={'lg'} borderWidth={3} colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
-                my={2} placeholder='Title' onChange={e => setHeaderContent({ ...headerContent, title: e.target.value })} value={headerContent.title} />
+                my={2} placeholder='Title' onChange={e => updateHeaderContent({ ...headerContent, title: e.target.value })} value={headerContent.title} />
             <label>Short Description</label>
             <Input borderRadius={'2xl'} size={'lg'} borderWidth={3} colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
-                my={2} placeholder='Short Description' onChange={e => setHeaderContent({ ...headerContent, short_description: e.target.value })} value={headerContent.short_description} />
+                my={2} placeholder='Short Description' onChange={e => updateHeaderContent({ ...headerContent, short_description: e.target.value })} value={headerContent.short_description} />
             <label>Image</label>
             <Input borderRadius={'2xl'} size={'lg'} borderWidth={3} colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
-                my={2} placeholder='Image Cover' onChange={e => setHeaderContent({ ...headerContent, image: e.target.value })} value={headerContent.image} />
+                my={2} placeholder='Image Cover' onChange={e => updateHeaderContent({ ...headerContent, image: e.target.value })} value={headerContent.image} />
             <label>Image Alt</label>
             <Input borderRadius={'2xl'} size={'lg'} borderWidth={3} colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
-                my={2} placeholder='Image Alt' onChange={e => setHeaderContent({ ...headerContent, image_alt: e.target.value })} value={headerContent.image_alt} />
+                my={2} placeholder='Image Alt' onChange={e => updateHeaderContent({ ...headerContent, image_alt: e.target.value })} value={headerContent.image_alt} />
         </Box>
     )
 }
 
-function MainContent({ content, setContent }) {
+function MainContent({ content, updateContent }) {
 
     // Custom image handler to add an image with a link
     const modules = {
@@ -75,7 +73,7 @@ function MainContent({ content, setContent }) {
 
         const imageElement = `<img src="${imageUrl}" alt="${imageAlt}" width="720px"/>`;
         // addedm img link to the content
-        setContent(prev => prev + imageElement);
+        updateContent(prev => prev + imageElement);
         setImageAlt('');
         setImageUrl('');
     }
@@ -94,7 +92,7 @@ function MainContent({ content, setContent }) {
                         <ReactQuill
                             theme="snow"
                             value={content}
-                            onChange={(e) => setContent(e)}
+                            onChange={(e) => updateContent(e)}
                             modules={modules}
                             style={{
                                 height: '100%', // Make the ReactQuill fill the container
@@ -116,7 +114,7 @@ function MainContent({ content, setContent }) {
     )
 }
 
-function ReviewContent({ token, headerContent, content, setHeaderContent, setContent }) {
+function ReviewContent({ token, headerContent, content, updateHeaderContent, updateContent }) {
 
     const toast = useToast()
 
@@ -156,8 +154,8 @@ function ReviewContent({ token, headerContent, content, setHeaderContent, setCon
 
             // **
             // -- clear the state
-            setHeaderContent({ title: '', short_description: '', image: '', image_alt: '' })
-            setContent('')
+            updateHeaderContent({ title: '', short_description: '', image: '', image_alt: '' })
+            updateContent('')
 
             // **
             // -- clear the localstorage
@@ -216,19 +214,35 @@ function AddBlog({ token }) {
         count: steps.length,
     })
 
-    const [headerContent, setHeaderContent] = useLocalStorage("headerContent", {
-        title: '',
-        short_description: '',
-        description: '',
-        image: '',
-        image_alt: ''
+    const [headerContent, setHeaderContent] = useState(() => {
+        const savedHeaderContent = localStorage.getItem("headerContent");
+        return savedHeaderContent ? JSON.parse(savedHeaderContent) : {
+            title: '',
+            short_description: '',
+            description: '',
+            image: '',
+            image_alt: ''
+        };
     });
 
-    const [content, setContent] = useLocalStorage("content", '');
+    const updateHeaderContent = (newContent) => {
+        setHeaderContent(newContent);
+        localStorage.setItem("headerContent", JSON.stringify(newContent));
+    };
+
+    const [content, setContent] = useState(() => {
+        const savedContent = localStorage.getItem("content");
+        return savedContent ? savedContent : '';
+    });
+
+    const updateContent = (newContent) => {
+        setContent(newContent);
+        localStorage.setItem("content", newContent);
+    };
 
     const handleClearContent = () => {
-        setHeaderContent({ title: '', short_description: '', image: '', image_alt: '' });
-        setContent('');
+        updateHeaderContent({ title: '', short_description: '', image: '', image_alt: '' });
+        updateContent('');
         localStorage.removeItem("headerContent");
         localStorage.removeItem("content");
         toast({
@@ -343,9 +357,9 @@ function AddBlog({ token }) {
                 </Button>
             </Flex>
 
-            {activeStep === 0 && (<HeaderContent headerContent={headerContent} setHeaderContent={setHeaderContent} />)}
-            {activeStep === 1 && (<MainContent content={content} setContent={setContent} />)}
-            {activeStep === 2 && (<ReviewContent token={token} headerContent={headerContent} content={content} setHeaderContent={setHeaderContent} setContent={setContent} />)}
+            {activeStep === 0 && (<HeaderContent headerContent={headerContent} updateHeaderContent={updateHeaderContent} />)}
+            {activeStep === 1 && (<MainContent content={content} updateContent={updateContent} />)}
+            {activeStep === 2 && (<ReviewContent token={token} headerContent={headerContent} content={content} updateHeaderContent={updateHeaderContent} updateContent={updateContent} />)}
 
         </Fragment >
     )
