@@ -67,6 +67,9 @@ function SideBar() {
                                 <Text onClick={() => handleLinkClick('/ProjectOverview', onClose)}
                                     className="nav-link" py={2}
                                     style={location.pathname === '/ProjectOverview' ? activeLink : {}}>Overview</Text>
+                                <Text onClick={() => handleLinkClick('/ImageProject', onClose)}
+                                    style={location.pathname === '/ImageProject' ? activeLink : {}}
+                                    className="nav-link" py={2}>Image Project</Text>
                                 <Text onClick={() => handleLinkClick('/AddProject', onClose)}
                                     style={location.pathname === '/AddProject' ? activeLink : {}}
                                     className="nav-link" py={2}>Add Project</Text>

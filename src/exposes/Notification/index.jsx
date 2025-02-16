@@ -15,7 +15,7 @@ import Loading from '../../components/Loading'
 import { deleteContact } from '../../api/contact/DELETE'
 
 
-function Contact({ token }) {
+function Notification({ token }) {
 
     const toast = useToast();
 
@@ -83,4 +83,4 @@ function Contact({ token }) {
     );
 }
 
-export default Contact
+export default Notification

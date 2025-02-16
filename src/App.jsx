@@ -24,9 +24,10 @@ import BlogOverview from './exposes/Blog/Overview';
 import ImageBlog from './exposes/Blog/Image';
 import AddProject from './exposes/Projects/Add';
 import ProjectOverview from './exposes/Projects/Overview';
+import ImageProject from './exposes/Projects/Image';
 import AddBadge from './exposes/Badge/Add';
 import BadgeOverview from './exposes/Badge/Overview';
-import Contact from './exposes/Contact';
+import Notification from './exposes/Notification';
 
 // CSS
 import "./index.css";
@@ -68,13 +69,14 @@ const App = () => {
               <Route path="/" element={<Base><Deployments token={token} /></Base>} />
               <Route path="/MetricsLogs" element={<Base><Metrics token={token} /></Base>} />
               <Route path="/ProjectOverview" element={<Base><ProjectOverview token={token} /></Base>} />
+              <Route path="/ImageProject" element={<Base><ImageProject token={token} /></Base>} />
               <Route path="/AddProject" element={<Base><AddProject token={token} /></Base>} />
               <Route path="/Blog" element={<Base><BlogOverview token={token} /></Base>} />
               <Route path="/ImageBlog" element={<Base><ImageBlog token={token} /></Base>} />
               <Route path="/AddBlog" element={<Base><AddBlog token={token} /></Base>} />
               <Route path="/Badge" element={<Base><BadgeOverview token={token} /></Base>} />
               <Route path="/AddBadge" element={<Base><AddBadge token={token} /></Base>} />
-              <Route path="/Notifications" element={<Base><Contact token={token} /></Base>} />
+              <Route path="/Notifications" element={<Base><Notification token={token} /></Base>} />
             </Route>
 
             {/* Redirect all unknown routes to /Login */}

@@ -12,7 +12,7 @@ import { fetchFiles } from '../../api/storage/GET'
 import { deleteFile } from '../../api/storage/DELETE'
 
 
-function ImageBlog({ token }) {
+function ImageProject({ token }) {
     const toast = useToast();
     const fileInputRef = React.useRef(null);
     const [images, setImages] = React.useState([]);
@@ -21,7 +21,7 @@ function ImageBlog({ token }) {
 
     const fetchImages = async (pageToken = "", search = "") => {
         try {
-            const response = await fetchFiles({ folder: 'blog-content', pageToken, search, token });
+            const response = await fetchFiles({ folder: 'project-content', pageToken, search, token });
             setImages(response.files);
             setNextPageToken(response.nextPageToken);
         } catch (error) {
@@ -54,7 +54,7 @@ function ImageBlog({ token }) {
         }
 
         try {
-            await uploadFile('blog-content', file, token);
+            await uploadFile('project-content', file, token);
             toast({
                 title: 'Image uploaded successfully',
                 status: 'success',
@@ -76,7 +76,7 @@ function ImageBlog({ token }) {
 
     const handleDelete = async (fileName) => {
         try {
-            await deleteFile('blog-content', fileName, token);
+            await deleteFile('project-content', fileName, token);
             toast({
                 title: 'Image deleted successfully',
                 status: 'success',
@@ -153,4 +153,4 @@ function ImageBlog({ token }) {
     );
 }
 
-export default ImageBlog
+export default ImageProject
