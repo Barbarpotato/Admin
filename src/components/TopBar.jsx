@@ -5,6 +5,7 @@ import {
     Breadcrumb, BreadcrumbItem, BreadcrumbLink,
     Heading
 } from '@chakra-ui/react'
+import { IoIosNotifications } from "react-icons/io";
 import { useLocation, useNavigate } from 'react-router-dom';
 import React from 'react'
 
@@ -56,7 +57,12 @@ function TopBar() {
 
             </Breadcrumb>
             <Spacer />
-            <WrapItem >
+            <WrapItem>
+                <IoIosNotifications style={{ cursor: 'pointer' }} color={'#ff79c6'} size={24}
+                    onClick={() => navigate('/Notifications')}
+                />
+            </WrapItem>
+            <WrapItem ml={5}>
                 <Popover>
                     <PopoverTrigger>
                         <Avatar

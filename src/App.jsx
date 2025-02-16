@@ -26,6 +26,7 @@ import AddProject from './exposes/Projects/Add';
 import ProjectOverview from './exposes/Projects/Overview';
 import AddBadge from './exposes/Badge/Add';
 import BadgeOverview from './exposes/Badge/Overview';
+import Contact from './exposes/Contact';
 
 // CSS
 import "./index.css";
@@ -73,6 +74,7 @@ const App = () => {
               <Route path="/AddBlog" element={<Base><AddBlog token={token} /></Base>} />
               <Route path="/Badge" element={<Base><BadgeOverview token={token} /></Base>} />
               <Route path="/AddBadge" element={<Base><AddBadge token={token} /></Base>} />
+              <Route path="/Notifications" element={<Base><Contact token={token} /></Base>} />
             </Route>
 
             {/* Redirect all unknown routes to /Login */}
