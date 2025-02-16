@@ -60,13 +60,6 @@ function ImageContent({ imageUrl, setImageUrl, tempImageList, setTempImageList }
     const toast = useToast()
 
     const handleAddedImageElement = () => {
-        // ** ensure that the user input is a valid URL
-        const regex = /^https?:\/\/[^\s\/$.?#].[^\s]*\?(.*=.*(&.*=.*)*)?$/;
-
-        if (!regex.test(tempImageUrl)) {
-            toast({ title: `Invalid Image URL`, status: "error" })
-            return;
-        }
 
         setTempImageList((prev) => [...prev, tempImageUrl]);
 
