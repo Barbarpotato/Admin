@@ -17,6 +17,9 @@ import { PostBlog } from "../../api/labs/POST"
 import 'react-quill/dist/quill.snow.css';
 import "../../index.css"
 
+// Custom Hook
+import useLocalStorage from '../../hooks/useLocalstorage';
+
 function HeaderContent({ headerContent, setHeaderContent }) {
     return (
         <Box my={4}>
@@ -213,7 +216,7 @@ function AddBlog({ token }) {
         count: steps.length,
     })
 
-    const [headerContent, setHeaderContent] = useState({
+    const [headerContent, setHeaderContent] = useLocalStorage("headerContent", {
         title: '',
         short_description: '',
         description: '',
@@ -221,7 +224,7 @@ function AddBlog({ token }) {
         image_alt: ''
     });
 
-    const [content, setContent] = useState('');
+    const [content, setContent] = useLocalStorage("content", '');
 
     const handleClearContent = () => {
         setHeaderContent({ title: '', short_description: '', image: '', image_alt: '' });
@@ -260,8 +263,12 @@ function AddBlog({ token }) {
     // **
     // -- Save content to localStorage
     const saveDataToLocalStorage = () => {
-        localStorage.setItem("headerContent", JSON.stringify(headerContent));
-        localStorage.setItem("content", content);
+        try {
+            localStorage.setItem("headerContent", JSON.stringify(headerContent));
+            localStorage.setItem("content", content);
+        } catch (err) {
+            console.error("Failed to save data to localStorage", err);
+        }
     };
 
     useEffect(() => {
@@ -269,6 +276,7 @@ function AddBlog({ token }) {
         // **
         // --Attach the event listener for tab close
         const handleBeforeUnload = () => {
+            console.log("Saving data to localStorage");
             saveDataToLocalStorage();
         };
 
