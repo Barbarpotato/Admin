@@ -2,7 +2,7 @@
 import React from 'react'
 import {
     Box, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Table,
-    Thead, Tbody, Tr, Th, Td, TableCaption, TableContainer,
+    Thead, Tbody, Tr, Th, Td, TableCaption, TableContainer, Text
 } from '@chakra-ui/react'
 import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line } from 'recharts'
 
@@ -76,7 +76,7 @@ function Metrics({ token }) {
                             </LineChart>
                         </Box>
 
-                        <Box overflowX={"scroll"}>  
+                        <Box overflowX={"scroll"}>
                             <Heading fontSize={{ base: 'xl', xl: '2xl' }} my={10}>Badges Metrics [30 Days]</Heading>
                             <LineChart width={2000} height={300} data={metrics.badges}
                                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
@@ -91,27 +91,30 @@ function Metrics({ token }) {
                         </Box>
                     </TabPanel>
                     <TabPanel>
-                        <TableContainer>
-                            <Table variant='simple'>
-                                <TableCaption>Metric Logs Based on 30 Days</TableCaption>
-                                <Thead>
-                                    <Tr>
-                                        <Th width={"30%"}>Time</Th>
-                                        <Th>Message</Th>
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
+                        {logs.length > 0 ? (
 
-                                    {logs.map((log) => (
-                                        <Tr key={log.id}>
-                                            <Td width={"30%"}>{log.time}</Td>
-                                            <Td>{log.message}</Td>
+                            <TableContainer>
+                                <Table variant='simple'>
+                                    <TableCaption>Metric Logs Based on 30 Days</TableCaption>
+                                    <Thead>
+                                        <Tr>
+                                            <Th width={"30%"}>Time</Th>
+                                            <Th>Message</Th>
                                         </Tr>
-                                    ))}
-
-                                </Tbody>
-                            </Table>
-                        </TableContainer>
+                                    </Thead>
+                                    <Tbody>
+                                        {logs.map((log) => (
+                                            <Tr key={log.id}>
+                                                <Td width={"30%"}>{log.time}</Td>
+                                                <Td>{log.message}</Td>
+                                            </Tr>
+                                        ))}
+                                    </Tbody>
+                                </Table>
+                            </TableContainer>
+                        ) : (
+                            <Text textAlign={"center"} color={"red.500"}>No logs found!</Text>
+                        )}
                     </TabPanel>
 
                 </TabPanels>
