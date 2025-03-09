@@ -32,7 +32,9 @@ function TopBar() {
                     locationSegments.length === 0 &&
                     <BreadcrumbItem>
                         <BreadcrumbLink color={'#ff79c6'} onClick={() => navigate('/')}>
-                            Deployments
+                            <Heading size={"md"}>
+                                Deployments
+                            </Heading>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                 }
