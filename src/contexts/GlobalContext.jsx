@@ -34,7 +34,7 @@ export const GlobalContextProvider = ({ children }) => {
             setPageNumber(1);
             setSearchParams({});
         };
-    }, []);
+    }, [location.pathname]);
 
     return <GlobalContext.Provider value={contextValue}>{children}</GlobalContext.Provider>;
 };
