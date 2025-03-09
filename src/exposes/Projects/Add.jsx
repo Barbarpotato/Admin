@@ -1,14 +1,15 @@
 // Core Modules
-import { Fragment, useState } from 'react'
-import { IoMdArrowDropleft, IoMdArrowDropright } from "react-icons/io";
-import { FiDelete } from "react-icons/fi";
-import { IconContext } from 'react-icons';
 import {
-    Box, Step, StepNumber, StepIndicator, StepTitle, Input, Button,
-    useToast, useSteps, Stepper, TagCloseButton, Link,
-    StepStatus, StepIcon, StepDescription, StepSeparator,
-    Flex, Spacer, Hide, Heading, HStack, Tag, Textarea
+    Box, Input, Button, TagCloseButton,
+    Link, Heading, HStack, Tag, Textarea
 } from '@chakra-ui/react'
+import { Fragment, useState } from 'react'
+
+// Custom Components
+import CustomStepper from '../../components/Stepper';
+
+// Context
+import { useGlobalContext } from '../../contexts/GlobalContext';
 
 // Custom Hooks
 import useLocalStorage from '../../hooks/useLocalstorage';
@@ -16,9 +17,50 @@ import useLocalStorage from '../../hooks/useLocalstorage';
 // API Modules
 import { PostProject } from '../../api/projects/POST';
 
-// CSS
-import "../../index.css"
 
+function AddProject({ token }) {
+
+    const { toast } = useGlobalContext();
+
+    const [headerContent, setHeaderContent] = useLocalStorage('headerContent-project', {
+        heading: "",
+        text: "",
+        image_url: "",
+        skills_url: ""
+    });
+
+    const [content, setContent] = useState(localStorage.getItem("content-project") || "");
+
+    const [imageUrl, setImageUrl] = useLocalStorage('imageUrl-project', []);
+    const [tempImageList, setTempImageList] = useLocalStorage('tempImageList-project', []);
+
+    const handleClearContent = () => {
+        setHeaderContent({ heading: "", text: "", image_url: "", skills_url: "" });
+        setImageUrl([]);
+        setTempImageList([]);
+        setContent('');
+        localStorage.removeItem("headerContent-project");
+        localStorage.removeItem("content-project");
+        localStorage.removeItem("imageUrl-project");
+        localStorage.removeItem("tempImageList-project");
+        toast({ title: `Content has been cleared`, status: "success" })
+    }
+
+    const steps = [
+        { title: 'Header', description: 'Add the general information of the Project', childComponent: <HeaderContent headerContent={headerContent} setHeaderContent={setHeaderContent} /> },
+        { title: 'Main', description: 'Describe Your Project', childComponent: <MainContent content={content} setContent={setContent} /> },
+        { title: 'Image', description: 'Upload Your Project Image using Link', childComponent: <ImageContent imageUrl={imageUrl} setImageUrl={setImageUrl} tempImageList={tempImageList} setTempImageList={setTempImageList} /> },
+        {
+            title: 'Review & Publish', description: 'Cross-Check the content before publish', childComponent: <ReviewContent token={token} headerContent={headerContent}
+                content={content} imageUrl={imageUrl} handleClearContent={handleClearContent} setHeaderContent={setHeaderContent}
+                setContent={setContent} setImageUrl={setImageUrl} setTempImageList={setTempImageList} />
+        },
+    ]
+
+    return (
+        <CustomStepper steps={steps} handleClearContent={handleClearContent} />
+    )
+}
 
 function HeaderContent({ headerContent, setHeaderContent }) {
     return (
@@ -56,8 +98,6 @@ function MainContent({ content, setContent }) {
 function ImageContent({ imageUrl, setImageUrl, tempImageList, setTempImageList }) {
 
     const [tempImageUrl, setTempImageUrl] = useState('');
-
-    const toast = useToast()
 
     const handleAddedImageElement = () => {
 
@@ -108,9 +148,9 @@ function ImageContent({ imageUrl, setImageUrl, tempImageList, setTempImageList }
     )
 }
 
-function ReviewContent({ token, headerContent, content, imageUrl }) {
+function ReviewContent({ token, headerContent, content, imageUrl, setHeaderContent, setContent, setImageUrl, setTempImageList }) {
 
-    const toast = useToast()
+    const { toast } = useGlobalContext();
 
     const handleSubmitProject = async () => {
         try {
@@ -141,7 +181,17 @@ function ReviewContent({ token, headerContent, content, imageUrl }) {
                 htmlImage: imageUrl.join('')
             }, token);
 
+            setHeaderContent({ heading: "", text: "", image_url: "", skills_url: "" });
+            setImageUrl([]);
+            setTempImageList([]);
+            setContent('');
+            localStorage.removeItem("headerContent-project");
+            localStorage.removeItem("content-project");
+            localStorage.removeItem("imageUrl-project");
+            localStorage.removeItem("tempImageList-project");
+
             toast({ title: `Successfully added Project Data`, status: "success", })
+
         } catch (err) {
             console.error(err)
             toast({ title: `Something went wrong`, status: "error", })
@@ -179,110 +229,6 @@ function ReviewContent({ token, headerContent, content, imageUrl }) {
             </Box>
             <Button size={'sm'} w={"100%"} colorScheme='purple' onClick={handleSubmitProject}>Publish Project</Button>
         </Fragment >
-    )
-}
-
-function AddProject({ token }) {
-
-    const toast = useToast()
-
-    const steps = [
-        { title: 'General Information', description: 'Add the general information of the Project' },
-        { title: 'Main Content', description: 'Describe Your Project' },
-        { title: 'Image', description: 'Upload Your Project Image using Link' },
-        { title: 'Review & Publish', description: 'Cross-Check the content before publish' },
-    ]
-
-    const { activeStep, setActiveStep } = useSteps({
-        index: 0,
-        count: steps.length,
-    })
-
-    const [headerContent, setHeaderContent] = useLocalStorage('headerContent-project', {
-        heading: "",
-        text: "",
-        image_url: "",
-        skills_url: ""
-    });
-
-    const [content, setContent] = useState(localStorage.getItem("content-project") || "");
-
-    const [imageUrl, setImageUrl] = useLocalStorage('imageUrl-project', []);
-    const [tempImageList, setTempImageList] = useLocalStorage('tempImageList-project', []);
-
-    const handleClearContent = () => {
-        setHeaderContent({ heading: "", text: "", image_url: "", skills_url: "" });
-        setImageUrl([]);
-        setTempImageList([]);
-        setContent('');
-        localStorage.removeItem("headerContent-project");
-        localStorage.removeItem("content-project");
-        localStorage.removeItem("imageUrl-project");
-        localStorage.removeItem("tempImageList-project");
-        toast({ title: `Content has been cleared`, status: "success" })
-    }
-
-
-    return (
-        <Fragment>
-
-            <Flex>
-                <></>
-                <Spacer />
-                <IconContext.Provider value={{ color: "#D91656", size: "2.5em" }}>
-                    <Button onClick={handleClearContent} p={0} variant={'ghost'} colorScheme='white'>
-                        <FiDelete />
-                    </Button>
-                </IconContext.Provider>
-            </Flex>
-
-            <Hide below='lg'>
-                <Stepper colorScheme='purple' index={activeStep}>
-                    {steps.map((step, index) => (
-                        <Step key={index}>
-                            <StepIndicator>
-                                <StepStatus
-                                    complete={<StepIcon />}
-                                    incomplete={<StepNumber />}
-                                    active={<StepNumber />}
-                                />
-                            </StepIndicator>
-
-                            <Box flexShrink='0'>
-                                <StepTitle>{step.title}</StepTitle>
-                                <StepDescription>{step.description}</StepDescription>
-                            </Box>
-
-                            <StepSeparator />
-                        </Step>
-                    ))}
-                </Stepper>
-            </Hide>
-
-            <Flex mb={4}>
-                <Button
-                    mt={4}
-                    colorScheme='purple'
-                    onClick={() => setActiveStep(activeStep === 0 ? 0 : activeStep - 1)}
-                    isDisabled={activeStep === 0}>
-                    <IoMdArrowDropleft />
-                </Button>
-                <Spacer />
-                <Button
-                    mt={4}
-                    colorScheme='purple'
-                    onClick={() => setActiveStep(activeStep === steps.length - 1 ? steps.length - 1 : activeStep + 1)}
-                    isDisabled={activeStep === steps.length - 1}>
-                    <IoMdArrowDropright />
-                </Button>
-            </Flex>
-
-            {activeStep === 0 && (<HeaderContent headerContent={headerContent} setHeaderContent={setHeaderContent} />)}
-            {activeStep === 1 && (<MainContent content={content} setContent={setContent} />)}
-            {activeStep === 2 && (<ImageContent imageUrl={imageUrl} setImageUrl={setImageUrl} tempImageList={tempImageList} setTempImageList={setTempImageList} />)}
-            {activeStep === 3 && (<ReviewContent token={token} headerContent={headerContent} content={content} imageUrl={imageUrl} />)}
-
-        </Fragment>
     )
 }
 

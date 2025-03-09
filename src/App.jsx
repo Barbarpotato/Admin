@@ -1,8 +1,8 @@
 // Core Modules
-import React, { Fragment, Suspense } from "react";
 import ReactDOM from "react-dom/client";
-import { QueryClient, QueryClientProvider } from "react-query";
+import React, { Fragment, Suspense } from "react";
 import { Box, ChakraProvider } from "@chakra-ui/react";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Routes, HashRouter, Navigate } from "react-router-dom";
 
 // Custom Hooks
@@ -16,15 +16,19 @@ import Guard from "./auth/Guard";
 import Sidebar from "./components/SideBar";
 import TopBar from "./components/TopBar";
 
+// Context
+import { GlobalContextProvider } from "./contexts/GlobalContext";
+
+// Full Pages
+import CustomImage from "./pages/Image";
+
 // Exposes Page
 import Deployments from "./exposes/Dashboard/Deployments";
 import Metrics from "./exposes/Dashboard/Metrics";
 import AddBlog from './exposes/Blog/Add';
 import BlogOverview from './exposes/Blog/Overview';
-import ImageBlog from './exposes/Blog/Image';
 import AddProject from './exposes/Projects/Add';
 import ProjectOverview from './exposes/Projects/Overview';
-import ImageProject from './exposes/Projects/Image';
 import AddBadge from './exposes/Badge/Add';
 import BadgeOverview from './exposes/Badge/Overview';
 import Notification from './exposes/Notification';
@@ -60,29 +64,31 @@ const App = () => {
     <HashRouter basename={process.env.NODE_ENV === 'production' ? '/Site/' : '/'}>
       <QueryClientProvider client={queryClient}>
         <ChakraProvider>
-          <Routes>
+          <GlobalContextProvider>
+            <Routes>
 
-            <Route path="/Login" element={<Login />} />
+              <Route path="/Login" element={<Login />} />
 
-            {/* Protected Routes */}
-            <Route element={<Guard />}>
-              <Route path="/" element={<Base><Deployments token={token} /></Base>} />
-              <Route path="/MetricsLogs" element={<Base><Metrics token={token} /></Base>} />
-              <Route path="/ProjectOverview" element={<Base><ProjectOverview token={token} /></Base>} />
-              <Route path="/ImageProject" element={<Base><ImageProject token={token} /></Base>} />
-              <Route path="/AddProject" element={<Base><AddProject token={token} /></Base>} />
-              <Route path="/Blog" element={<Base><BlogOverview token={token} /></Base>} />
-              <Route path="/ImageBlog" element={<Base><ImageBlog token={token} /></Base>} />
-              <Route path="/AddBlog" element={<Base><AddBlog token={token} /></Base>} />
-              <Route path="/Badge" element={<Base><BadgeOverview token={token} /></Base>} />
-              <Route path="/AddBadge" element={<Base><AddBadge token={token} /></Base>} />
-              <Route path="/Notifications" element={<Base><Notification token={token} /></Base>} />
-            </Route>
+              {/* Protected Routes */}
+              <Route element={<Guard />}>
+                <Route path="/" element={<Base><Deployments token={token} /></Base>} />
+                <Route path="/MetricsLogs" element={<Base><Metrics token={token} /></Base>} />
+                <Route path="/ProjectOverview" element={<Base><ProjectOverview token={token} /></Base>} />
+                <Route path="/ImageProject" element={<Base><CustomImage token={token} sourceFolder={"project-content"} /></Base>} />
+                <Route path="/AddProject" element={<Base><AddProject token={token} /></Base>} />
+                <Route path="/Blog" element={<Base><BlogOverview token={token} /></Base>} />
+                <Route path="/ImageBlog" element={<Base><CustomImage token={token} sourceFolder={"blog-content"} /></Base>} />
+                <Route path="/AddBlog" element={<Base><AddBlog token={token} /></Base>} />
+                <Route path="/Badge" element={<Base><BadgeOverview token={token} /></Base>} />
+                <Route path="/AddBadge" element={<Base><AddBadge token={token} /></Base>} />
+                <Route path="/Notifications" element={<Base><Notification token={token} /></Base>} />
+              </Route>
 
-            {/* Redirect all unknown routes to /Login */}
-            <Route path="*" element={<Navigate to="/Login" />} />
+              {/* Redirect all unknown routes to /Login */}
+              <Route path="*" element={<Navigate to="/Login" />} />
 
-          </Routes>
+            </Routes>
+          </GlobalContextProvider>
         </ChakraProvider>
       </QueryClientProvider>
     </HashRouter >

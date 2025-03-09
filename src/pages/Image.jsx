@@ -1,27 +1,32 @@
 // Core Modules
-import React from 'react'
-import { CiImageOn } from "react-icons/ci";
 import {
     Tabs, TabList, TabPanels, Tab, TabPanel, Spacer,
-    Button, Input, useToast, Flex, Text
+    Button, Input, Flex, Text
 } from '@chakra-ui/react'
+import { useRef, useState, useEffect } from 'react'
+import { CiImageOn } from "react-icons/ci"
 
 // API Modules
-import { uploadFile } from '../../api/storage/POST'
-import { fetchFiles } from '../../api/storage/GET'
-import { deleteFile } from '../../api/storage/DELETE'
+import { uploadFile } from '../api/storage/POST'
+import { fetchFiles } from '../api/storage/GET'
+import { deleteFile } from '../api/labs/DELETE'
 
+// Context
+import { useGlobalContext } from '../contexts/GlobalContext';
 
-function ImageBlog({ token }) {
-    const toast = useToast();
-    const fileInputRef = React.useRef(null);
-    const [images, setImages] = React.useState([]);
-    const [nextPageToken, setNextPageToken] = React.useState(null);
-    const [searchTerm, setSearchTerm] = React.useState("");
+function CustomImage({ token, sourceFolder }) {
+
+    const { toast } = useGlobalContext();
+
+    const fileInputRef = useRef(null);
+
+    const [images, setImages] = useState([]);
+    const [nextPageToken, setNextPageToken] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
 
     const fetchImages = async (pageToken = "", search = "") => {
         try {
-            const response = await fetchFiles({ folder: 'blog-content', pageToken, search, token });
+            const response = await fetchFiles({ folder: `${sourceFolder}`, pageToken, search, token });
             setImages(response.files);
             setNextPageToken(response.nextPageToken);
         } catch (error) {
@@ -35,9 +40,9 @@ function ImageBlog({ token }) {
         }
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         fetchImages();
-    }, []);
+    }, [sourceFolder]);
 
     const handleUpload = async () => {
         const file = fileInputRef.current.files[0];
@@ -54,7 +59,7 @@ function ImageBlog({ token }) {
         }
 
         try {
-            await uploadFile('blog-content', file, token);
+            await uploadFile('project-content', file, token);
             toast({
                 title: 'Image uploaded successfully',
                 status: 'success',
@@ -76,7 +81,7 @@ function ImageBlog({ token }) {
 
     const handleDelete = async (fileName) => {
         try {
-            await deleteFile('blog-content', fileName, token);
+            await deleteFile('project-content', fileName, token);
             toast({
                 title: 'Image deleted successfully',
                 status: 'success',
@@ -153,4 +158,4 @@ function ImageBlog({ token }) {
     );
 }
 
-export default ImageBlog
+export default CustomImage

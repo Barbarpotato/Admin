@@ -1,49 +1,33 @@
 // Core Modules
-import {
-    useToast, useDisclosure, Flex, Button,
-    Box, Heading, Text, Avatar, Spacer, Input
-} from '@chakra-ui/react';
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import React, { Fragment, useState } from 'react'
+import { Flex, Box, Heading, Text, Avatar } from '@chakra-ui/react';
+import { Fragment } from 'react'
 
 // API Modules
 import { useBadgesData } from '../../api/badges/GET';
 import { DeleteBadge } from '../../api/badges/DELETE.js';
 
+// Context
+import { useGlobalContext } from '../../contexts/GlobalContext';
+
 // Custom Components
+import Search from '../../components/Search.jsx';
 import CustomTable from '../../components/Table.jsx';
+import Pagination from '../../components/Pagination.jsx';
 import CustomModal from '../../components/Modal.jsx';
 import Loading from '../../components/Loading.jsx';
-
-// CSS
-import "../../index.css"
 
 
 function BadgeOverview({ token }) {
 
+    // ** Global Context
+    const { dataTable, setDataTable, pageNumber, searchParams,
+        isOpen, onOpen, onClose, toast } = useGlobalContext();
 
-    // ** internal state
-    const [badge, setBadge] = useState({});
-    const [pageNumber, setPageNumber] = useState(1);
-    const [searchParams, setSearchParams] = useState({
-        title: "",
-    });
-
+    // ** React query api call
     const { data: badges, isLoading, isError, refetch } = useBadgesData(pageNumber, 8, searchParams.title);
-
-    // ** chakra staff
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const toast = useToast();
 
     if (isLoading) return <Loading />
     if (isError) return 'Error loading badges';
-
-    const handleSearchQuery = (e) => {
-        setPageNumber(1); // Reset to first page when searching
-        setSearchParams({
-            title: e.target.title.value
-        });
-    };
 
     const ActionListTable = [
         {
@@ -87,7 +71,7 @@ function BadgeOverview({ token }) {
             onClick: async (badge_id) => {
                 try {
                     const badge_data = badges.data.find((badge) => badge.badges_id === badge_id)
-                    setBadge(badge_data)
+                    setDataTable(badge_data)
                     onOpen()
                 } catch (err) {
                     console.error(err)
@@ -121,52 +105,31 @@ function BadgeOverview({ token }) {
 
     return (
         <Fragment>
+
             <CustomModal modalTitle='Badge Detail' modalSize='xl' isOpen={isOpen} onClose={onClose} >
-                {badge && (
+                {dataTable && (
                     <Box>
-                        <a href={badge.credential_url} target='_blank'>
-                            <Heading _hover={{ cursor: 'pointer', textDecoration: 'underline' }}>{badge.title}</Heading>
+                        <a href={dataTable.credential_url} target='_blank'>
+                            <Heading _hover={{ cursor: 'pointer', textDecoration: 'underline' }}>{dataTable.title}</Heading>
                             <Flex mt={2} alignItems={'center'}>
-                                <Avatar mr={3} src={badge.logo_url} />
-                                <Text opacity={0.5}>{badge.date} - {badge.company_name}</Text>
+                                <Avatar mr={3} src={dataTable.logo_url} />
+                                <Text opacity={0.5}>{dataTable.date} - {dataTable.company_name}</Text>
                             </Flex>
                         </a>
                         <Text my={4}>
-                            {badge.description}
+                            {dataTable.description}
                         </Text>
                     </Box>
                 )}
             </CustomModal>
 
-            <form onSubmit={handleSearchQuery}>
-                <Flex alignItems={'center'} my={8} justifyContent={'center'}>
-                    <Spacer />
-                    <Input width={{ base: '100%', lg: '25%' }} borderLeftRadius={'2xl'} borderRightRadius={0} size={'md'} borderWidth={3} colorScheme='purple' borderColor={"#536189"}
-                        focusBorderColor={"#ff79c6"} placeholder='Search By title...' name='title' />
-                    <Button borderLeftRadius={0} size={'md'} colorScheme='purple'
-                        type='submit'>
-                        Search
-                    </Button>
-                </Flex>
-            </form>
+            <Search searchKey='title' />
 
-            <CustomTable ColumnNames={['id', 'title', 'company_name', 'date', 'action']} Rows={badges.data}
-                RowsAttr={["badges_id", "title", "company_name", "date"]}
+            <CustomTable ColumnNames={['title', 'company_name', 'date', 'Badge ID', 'action']} Rows={badges.data}
+                RowsAttr={["title", "company_name", "date", "badges_id"]}
                 KeyAction={"badges_id"} ActionList={ActionListTable} />
 
-
-            <Flex alignItems={'center'} my={8} justifyContent={'center'}>
-                <Spacer />
-                <Button mr={4} colorScheme='purple' isDisabled={pageNumber === 1}
-                    onClick={() => setPageNumber(prev => prev - 1)}><IoIosArrowBack /></Button>
-                <Text>
-                    Page {badges.current_page} of {badges.last_page}
-                </Text>
-                <Button ml={4} colorScheme='purple'
-                    isDisabled={pageNumber === badges.last_page}
-                    onClick={() => setPageNumber(prev => prev + 1)}><IoIosArrowForward /></Button>
-            </Flex>
-
+            <Pagination paginationData={badges} />
 
         </Fragment>
     )

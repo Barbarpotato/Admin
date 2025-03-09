@@ -48,7 +48,7 @@ function CustomTable({ ColumnNames = [], RowsAttr = [], Rows = [], KeyAction = "
     useEffect(() => {
         // ** Clean up the the data Rows based on the RowsAttr pick
         if (RowsAttr.length > 0) {
-            const filteredRows = Rows.map(row => {
+            let filteredRows = Rows.map(row => {
                 let filteredRow = {};
                 Object.keys(row).forEach(key => {
                     if (RowsAttr.includes(key)) {
@@ -57,6 +57,16 @@ function CustomTable({ ColumnNames = [], RowsAttr = [], Rows = [], KeyAction = "
                 })
                 return filteredRow
             })
+
+            // sort filtered rows based on the rowsattr
+            filteredRows = filteredRows.map(row => {
+                let sortedRow = {};
+                RowsAttr.forEach(key => {
+                    sortedRow[key] = row[key]
+                })
+                return sortedRow
+            })
+
             setRowsState(filteredRows)
         }
         // ** If RowsAttr is empty, no filtering is applied

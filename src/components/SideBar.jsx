@@ -1,113 +1,107 @@
 import {
-    Button, useDisclosure, Drawer, DrawerBody, Box, DrawerHeader,
+    useDisclosure, Drawer, DrawerBody, Box, DrawerHeader,
     DrawerOverlay, DrawerContent, DrawerCloseButton, Text, Heading,
-} from '@chakra-ui/react'
+} from '@chakra-ui/react';
 import { IconContext } from 'react-icons';
-import { FaAngleDoubleRight } from "react-icons/fa";
-import { useRef, Fragment } from 'react'
+import { GiHamburgerMenu } from "react-icons/gi";
+import { useRef, Fragment } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+// Define navigation structure
+const navItems = [
+    {
+        section: 'Dashboard',
+        links: [
+            { label: 'Deployments', path: '/' },
+            { label: 'Metrics & Logs', path: '/MetricsLogs' },
+        ],
+    },
+    {
+        section: 'Project',
+        links: [
+            { label: 'Overview', path: '/ProjectOverview' },
+            { label: 'Image Project', path: '/ImageProject' },
+            { label: 'Add Project', path: '/AddProject' },
+        ],
+    },
+    {
+        section: 'Blog Site',
+        links: [
+            { label: 'Overview', path: '/Blog' },
+            { label: 'Image Blog', path: '/ImageBlog' },
+            { label: 'Add Blog', path: '/AddBlog' },
+        ],
+    },
+    {
+        section: 'Badge Site',
+        links: [
+            { label: 'Overview', path: '/Badge' },
+            { label: 'Add Badge', path: '/AddBadge' },
+        ],
+    },
+];
+
 function SideBar() {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const NavButton = useRef();
 
-    const location = useLocation()
-    const navigate = useNavigate()
-
-    const { isOpen, onOpen, onClose } = useDisclosure()
-
-    const NavButton = useRef()
-
-    const handleLinkClick = (routeName, onCloseDrawer) => {
-        navigate(routeName)
-        onCloseDrawer()
-    }
+    const handleLinkClick = (routeName) => {
+        navigate(routeName);
+        onClose();
+    };
 
     const activeLink = {
         color: '#ff79c6',
         fontWeight: 'bold',
         textDecoration: 'underline',
-    }
+    };
 
     return (
         <Fragment>
-            <Button backgroundColor={'#ff79c6'} colorScheme='pink'
-                position="fixed" top="85%" left="-4" height={"60px"} onClick={onOpen} >
+            <button className="sidebar-toggle-button" onClick={onOpen}>
                 <IconContext.Provider value={{ size: "20", color: "#292b37" }}>
-                    <FaAngleDoubleRight />
+                    <GiHamburgerMenu />
                 </IconContext.Provider>
-            </Button>
+            </button>
             <Drawer
                 colorScheme={'blackAlpha'}
                 isOpen={isOpen}
                 placement='left'
                 onClose={onClose}
-                finalFocusRef={NavButton}>
-
+                finalFocusRef={NavButton}
+            >
                 <DrawerOverlay />
                 <DrawerContent>
                     <DrawerCloseButton />
-                    <DrawerHeader color={'#ff79c6'}>Hello, Darmawan</DrawerHeader>
+                    <DrawerHeader color={'#ff79c6'} fontWeight={'bold'}>Hello, Darmawan</DrawerHeader>
 
                     <DrawerBody>
-                        <Box>
-                            <Heading py={2} size={'md'}>Dashboard</Heading>
-                            <Box paddingLeft={'20px'}>
-                                <Text onClick={() => handleLinkClick('/', onClose)}
-                                    style={location.pathname === '/' ? activeLink : {}}
-                                    className="nav-link" py={2}>Deployments</Text>
-
-                                <Text onClick={() => handleLinkClick('/MetricsLogs', onClose)}
-                                    style={location.pathname === '/MetricsLogs' ? activeLink : {}}
-                                    className="nav-link" py={2}>Metrics & Logs</Text>
+                        {navItems.map((item, index) => (
+                            <Box key={index} mb={4}>
+                                <Heading py={2} size={'sm'}>{item.section}</Heading>
+                                <Box paddingLeft={'20px'}>
+                                    {item.links.map((link) => (
+                                        <Text
+                                            key={link.path}
+                                            onClick={() => handleLinkClick(link.path)}
+                                            style={location.pathname === link.path ? activeLink : {}}
+                                            className="nav-link"
+                                            py={2}
+                                            cursor="pointer"
+                                        >
+                                            {link.label}
+                                        </Text>
+                                    ))}
+                                </Box>
                             </Box>
-                        </Box>
-
-                        <Box>
-                            <Heading py={2} size={'md'}>Project</Heading>
-                            <Box paddingLeft={'20px'}>
-                                <Text onClick={() => handleLinkClick('/ProjectOverview', onClose)}
-                                    className="nav-link" py={2}
-                                    style={location.pathname === '/ProjectOverview' ? activeLink : {}}>Overview</Text>
-                                <Text onClick={() => handleLinkClick('/ImageProject', onClose)}
-                                    style={location.pathname === '/ImageProject' ? activeLink : {}}
-                                    className="nav-link" py={2}>Image Project</Text>
-                                <Text onClick={() => handleLinkClick('/AddProject', onClose)}
-                                    style={location.pathname === '/AddProject' ? activeLink : {}}
-                                    className="nav-link" py={2}>Add Project</Text>
-                            </Box>
-                        </Box>
-
-                        <Box>
-                            <Heading py={2} size={'md'}>Blog Site</Heading>
-                            <Box paddingLeft={'20px'}>
-                                <Text onClick={() => handleLinkClick('/Blog', onClose)}
-                                    style={location.pathname === '/Blog' ? activeLink : {}}
-                                    className="nav-link" py={2}>Overview</Text>
-                                <Text onClick={() => handleLinkClick('/ImageBlog', onClose)}
-                                    style={location.pathname === '/ImageBlog' ? activeLink : {}}
-                                    className="nav-link" py={2}>Image Blog</Text>
-                                <Text onClick={() => handleLinkClick('/AddBlog', onClose)}
-                                    style={location.pathname === '/AddBlog' ? activeLink : {}}
-                                    className="nav-link" py={2}>Add Blog</Text>
-                            </Box>
-                        </Box>
-
-                        <Box>
-                            <Heading py={2} size={'md'}>Badge Site</Heading>
-                            <Box paddingLeft={'20px'}>
-                                <Text onClick={() => handleLinkClick('/Badge', onClose)}
-                                    style={location.pathname === '/Badge' ? activeLink : {}}
-                                    className="nav-link" py={2}>Overview</Text>
-                                <Text onClick={() => handleLinkClick('/AddBadge', onClose)}
-                                    style={location.pathname === '/AddBadge' ? activeLink : {}}
-                                    className="nav-link" py={2}>Add Badge</Text>
-                            </Box>
-                        </Box>
-
+                        ))}
                     </DrawerBody>
                 </DrawerContent>
             </Drawer>
         </Fragment>
-    )
+    );
 }
 
-export default SideBar
+export default SideBar;

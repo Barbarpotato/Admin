@@ -1,21 +1,126 @@
 // Core Modules
 import { Fragment, useState, useEffect } from 'react'
-import ReactQuill from 'react-quill';
-import { IconContext } from 'react-icons';
-import { FiDelete } from "react-icons/fi";
-import { IoMdArrowDropleft, IoMdArrowDropright } from "react-icons/io";
 import {
-    Box, Tabs, TabList, TabPanels, Tab, Step, StepNumber, StepIndicator, StepTitle, TabPanel, Input,
-    Button, useToast, useSteps, Stepper, StepStatus, StepIcon, StepDescription, StepSeparator, Flex, Spacer,
-    Hide, Text, Image, Heading
+    Box, Tabs, TabList, TabPanels, Tab, TabPanel, Input,
+    Button, useToast, Text, Image, Heading
 } from '@chakra-ui/react'
+import ReactQuill from 'react-quill';
+
+// Context
+import { useGlobalContext } from '../../contexts/GlobalContext';
+
+// Custom Components
+import CustomStepper from '../../components/Stepper';
 
 // API Modules
 import { PostBlog } from "../../api/labs/POST"
 
 // CSS
 import 'react-quill/dist/quill.snow.css';
-import "../../index.css"
+
+
+function AddBlog({ token }) {
+
+    const { toast } = useGlobalContext();
+
+    const [headerContent, setHeaderContent] = useState(() => {
+        const savedHeaderContent = localStorage.getItem("headerContent");
+        return savedHeaderContent ? JSON.parse(savedHeaderContent) : {
+            title: '',
+            short_description: '',
+            description: '',
+            image: '',
+            image_alt: ''
+        };
+    });
+
+    const updateHeaderContent = (newContent) => {
+        setHeaderContent(newContent);
+        localStorage.setItem("headerContent", JSON.stringify(newContent));
+    };
+
+    const [content, setContent] = useState(() => {
+        const savedContent = localStorage.getItem("content");
+        return savedContent ? savedContent : '';
+    });
+
+    const updateContent = (newContent) => {
+        setContent(newContent);
+        localStorage.setItem("content", newContent);
+    };
+
+    const handleClearContent = () => {
+        updateHeaderContent({ title: '', short_description: '', image: '', image_alt: '' });
+        updateContent('');
+        localStorage.removeItem("headerContent");
+        localStorage.removeItem("content");
+        toast({
+            title: `Content has been cleared`,
+            status: "success"
+        })
+    }
+
+    useEffect(() => {
+
+        // **
+        // -- Load data from localStorage if it exists
+        const storedHeaderContent = localStorage.getItem("headerContent");
+        const storedContent = localStorage.getItem("content");
+
+        if (storedHeaderContent) {
+            setHeaderContent(JSON.parse(storedHeaderContent));
+        }
+        if (storedContent) {
+            setContent(storedContent);
+        }
+
+        if (storedContent) {
+            toast({
+                title: `Restoring Content Data`,
+                status: "success",
+            })
+        }
+
+    }, []);
+
+    // **
+    // -- Save content to localStorage
+    const saveDataToLocalStorage = () => {
+        try {
+            localStorage.setItem("headerContent", JSON.stringify(headerContent));
+            localStorage.setItem("content", content);
+        } catch (err) {
+            console.error("Failed to save data to localStorage", err);
+        }
+    };
+
+    useEffect(() => {
+
+        // **
+        // --Attach the event listener for tab close
+        const handleBeforeUnload = () => {
+            saveDataToLocalStorage();
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        // **
+        // -- Cleanup the event listener when the component unmounts
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, [headerContent, content]);
+
+    const steps = [
+        { title: 'General Information', description: 'Add the general information of the blog', childComponent: <HeaderContent headerContent={headerContent} updateHeaderContent={updateHeaderContent} /> },
+        { title: 'Main Content', description: 'Add the main content of the blog', childComponent: <MainContent content={content} updateContent={updateContent} /> },
+        { title: 'Review & Publish', description: 'Cross-Check the content before publish', childComponent: <ReviewContent token={token} headerContent={headerContent} content={content} updateHeaderContent={updateHeaderContent} updateContent={updateContent} /> },
+    ]
+
+    return (
+        <CustomStepper steps={steps} handleClearContent={handleClearContent} />
+    )
+}
 
 
 function HeaderContent({ headerContent, updateHeaderContent }) {
@@ -195,172 +300,6 @@ function ReviewContent({ token, headerContent, content, updateHeaderContent, upd
                 </Box>
             </Box>
             <Button size={'sm'} w={"100%"} colorScheme='purple' onClick={handleSubmitBlog}>Publish Blog</Button>
-        </Fragment >
-    )
-}
-
-function AddBlog({ token }) {
-
-    const toast = useToast();
-
-    const steps = [
-        { title: 'General Information', description: 'Add the general information of the blog' },
-        { title: 'Main Content', description: 'Add the main content of the blog' },
-        { title: 'Review & Publish', description: 'Cross-Check the content before publish' },
-    ]
-
-    const { activeStep, setActiveStep } = useSteps({
-        index: 0,
-        count: steps.length,
-    })
-
-    const [headerContent, setHeaderContent] = useState(() => {
-        const savedHeaderContent = localStorage.getItem("headerContent");
-        return savedHeaderContent ? JSON.parse(savedHeaderContent) : {
-            title: '',
-            short_description: '',
-            description: '',
-            image: '',
-            image_alt: ''
-        };
-    });
-
-    const updateHeaderContent = (newContent) => {
-        setHeaderContent(newContent);
-        localStorage.setItem("headerContent", JSON.stringify(newContent));
-    };
-
-    const [content, setContent] = useState(() => {
-        const savedContent = localStorage.getItem("content");
-        return savedContent ? savedContent : '';
-    });
-
-    const updateContent = (newContent) => {
-        setContent(newContent);
-        localStorage.setItem("content", newContent);
-    };
-
-    const handleClearContent = () => {
-        updateHeaderContent({ title: '', short_description: '', image: '', image_alt: '' });
-        updateContent('');
-        localStorage.removeItem("headerContent");
-        localStorage.removeItem("content");
-        toast({
-            title: `Content has been cleared`,
-            status: "success"
-        })
-    }
-
-    useEffect(() => {
-
-        // **
-        // -- Load data from localStorage if it exists
-        const storedHeaderContent = localStorage.getItem("headerContent");
-        const storedContent = localStorage.getItem("content");
-
-        if (storedHeaderContent) {
-            setHeaderContent(JSON.parse(storedHeaderContent));
-        }
-        if (storedContent) {
-            setContent(storedContent);
-        }
-
-        if (storedContent) {
-            toast({
-                title: `Restoring Content Data`,
-                status: "success",
-            })
-        }
-
-    }, []);
-
-    // **
-    // -- Save content to localStorage
-    const saveDataToLocalStorage = () => {
-        try {
-            localStorage.setItem("headerContent", JSON.stringify(headerContent));
-            localStorage.setItem("content", content);
-        } catch (err) {
-            console.error("Failed to save data to localStorage", err);
-        }
-    };
-
-    useEffect(() => {
-
-        // **
-        // --Attach the event listener for tab close
-        const handleBeforeUnload = () => {
-            console.log("Saving data to localStorage");
-            saveDataToLocalStorage();
-        };
-
-        window.addEventListener("beforeunload", handleBeforeUnload);
-
-        // **
-        // -- Cleanup the event listener when the component unmounts
-        return () => {
-            window.removeEventListener("beforeunload", handleBeforeUnload);
-        };
-    }, [headerContent, content]);
-
-    return (
-        <Fragment>
-
-            <Flex>
-                <></>
-                <Spacer />
-                <IconContext.Provider value={{ color: "#D91656", size: "2.5em" }}>
-                    <Button onClick={handleClearContent} p={0} variant={'ghost'} colorScheme='white'>
-                        <FiDelete />
-                    </Button>
-                </IconContext.Provider>
-            </Flex>
-
-            <Hide below='lg'>
-                <Stepper colorScheme='purple' index={activeStep}>
-                    {steps.map((step, index) => (
-                        <Step key={index}>
-                            <StepIndicator>
-                                <StepStatus
-                                    complete={<StepIcon />}
-                                    incomplete={<StepNumber />}
-                                    active={<StepNumber />}
-                                />
-                            </StepIndicator>
-
-                            <Box flexShrink='0'>
-                                <StepTitle>{step.title}</StepTitle>
-                                <StepDescription>{step.description}</StepDescription>
-                            </Box>
-
-                            <StepSeparator />
-                        </Step>
-                    ))}
-                </Stepper>
-            </Hide>
-
-            <Flex mb={4}>
-                <Button
-                    mt={4}
-                    colorScheme='purple'
-                    onClick={() => setActiveStep(activeStep === 0 ? 0 : activeStep - 1)}
-                    isDisabled={activeStep === 0}>
-                    <IoMdArrowDropleft />
-                </Button>
-                <Spacer />
-                <Button
-                    mt={4}
-                    colorScheme='purple'
-                    onClick={() => setActiveStep(activeStep === steps.length - 1 ? steps.length - 1 : activeStep + 1)}
-                    isDisabled={activeStep === steps.length - 1}>
-                    <IoMdArrowDropright />
-                </Button>
-            </Flex>
-
-            {activeStep === 0 && (<HeaderContent headerContent={headerContent} updateHeaderContent={updateHeaderContent} />)}
-            {activeStep === 1 && (<MainContent content={content} updateContent={updateContent} />)}
-            {activeStep === 2 && (<ReviewContent token={token} headerContent={headerContent} content={content} updateHeaderContent={updateHeaderContent} updateContent={updateContent} />)}
-
         </Fragment >
     )
 }

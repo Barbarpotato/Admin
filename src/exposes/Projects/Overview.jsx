@@ -1,46 +1,33 @@
 // Core Modules
-import { Fragment, useState } from 'react'
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import {
-    useToast, useDisclosure, Heading, Box, Button,
-    Flex, Spacer, Input, Text
-} from '@chakra-ui/react';
+import { Fragment } from 'react'
+import { Heading, Box } from '@chakra-ui/react';
+
+// Context
+import { useGlobalContext } from '../../contexts/GlobalContext';
 
 // Custom Components
+import Search from '../../components/Search';
 import CustomTable from '../../components/Table';
+import Pagination from '../../components/Pagination';
 import CustomModal from '../../components/Modal';
 
 // API Modules
 import { useDataProjects } from '../../api/projects/GET';
 import { DeleteProject } from '../../api/projects/DELETE';
 
-// CSS
-import '../../index.css'
-
 
 function ProjectsOverview({ token }) {
 
-    // ** internal state
-    const [projectData, setProjectData] = useState({});
-    const [pageNumber, setPageNumber] = useState(1);
-    const [searchParams, setSearchParams] = useState({
-        heading: "",
-    });
+    // ** Global Context 
+    const { dataTable, setDataTable, pageNumber, searchParams,
+        isOpen, onOpen, onClose, toast
+    } = useGlobalContext();
 
+    // ** React query api call
     const { data: projects, isLoading, isError, refetch } = useDataProjects(pageNumber, 8, searchParams.heading);
-
-    const { isOpen: isOpenProjectModal, onOpen: onOpenProjectModal, onClose: onCloseProjectModal } = useDisclosure();
-    const toast = useToast();
 
     if (isLoading) return 'Loading...'
     if (isError) return 'Error loading projects'
-
-    const handleSearchQuery = (e) => {
-        setPageNumber(1); // Reset to first page when searching
-        setSearchParams({
-            heading: e.target.title.value
-        });
-    };
 
     const ActionListTable = [
         {
@@ -109,8 +96,8 @@ function ProjectsOverview({ token }) {
                     let getProjectById = projects.data.find((project) => project.project_id === project_id)
 
                     // ** store to react state
-                    setProjectData(getProjectById);
-                    onOpenProjectModal()
+                    setDataTable(getProjectById);
+                    onOpen()
                 } catch (err) {
                     console.error(err)
                     toast({
@@ -142,55 +129,34 @@ function ProjectsOverview({ token }) {
     ]
 
     return (
-        <div>
-            <CustomModal modalTitle='Project Detail' modalSize='3xl' isOpen={isOpenProjectModal} onClose={onCloseProjectModal} >
+        <Fragment>
+
+            <CustomModal modalTitle='Project Detail' modalSize='3xl' isOpen={isOpen} onClose={onClose} >
                 <Fragment>
-                    <Heading fontSize={{ lg: 'xxx-large', base: 'xx-large' }}>{projectData?.heading}</Heading>
-                    <Heading fontSize={{ lg: 'x-large', base: 'large' }}>{projectData?.text}</Heading>
+                    <Heading fontSize={{ lg: 'xxx-large', base: 'xx-large' }}>{dataTable?.heading}</Heading>
+                    <Heading fontSize={{ lg: 'x-large', base: 'large' }}>{dataTable?.text}</Heading>
                     <Box >
                         <pre style={{
                             marginBottom: '10px', textAlign: 'justify', whiteSpace: 'pre-wrap',
                             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica',
                         }}>
-                            {projectData?.htmlContent}
+                            {dataTable?.htmlContent}
                         </pre>
                     </Box>
                     <Heading my={5} >User Interface (UI)</Heading>
-                    <Box id='image' dangerouslySetInnerHTML={{ __html: projectData?.htmlImage }}>
+                    <Box id='image' dangerouslySetInnerHTML={{ __html: dataTable?.htmlImage }}>
                     </Box>
                 </Fragment>
             </CustomModal>
 
+            <Search searchKey='heading' />
 
-            <form onSubmit={handleSearchQuery}>
-                <Flex alignItems={'center'} my={8} justifyContent={'center'}>
-                    <Spacer />
-                    <Input width={{ base: '100%', lg: '25%' }} borderLeftRadius={'2xl'} borderRightRadius={0} size={'md'} borderWidth={3} colorScheme='purple' borderColor={"#536189"}
-                        focusBorderColor={"#ff79c6"} placeholder='Search By heading...' name='title' />
-                    <Button borderLeftRadius={0} size={'md'} colorScheme='purple'
-                        type='submit'>
-                        Search
-                    </Button>
-                </Flex>
-            </form>
+            <CustomTable ColumnNames={["Heading", "Text", "Project ID", "Action"]}
+                Rows={projects.data} RowsAttr={["heading", "text", "project_id"]} KeyAction="project_id" ActionList={ActionListTable} />
 
-            <CustomTable ColumnNames={["Project ID", "Heading", "Text", "Action"]}
-                Rows={projects.data} RowsAttr={["project_id", "heading", "text"]} KeyAction="project_id" ActionList={ActionListTable} />
+            <Pagination paginationData={projects} />
 
-
-            <Flex alignItems={'center'} my={8} justifyContent={'center'}>
-                <Spacer />
-                <Button mr={4} colorScheme='purple' isDisabled={pageNumber === 1}
-                    onClick={() => setPageNumber(prev => prev - 1)}><IoIosArrowBack /></Button>
-                <Text>
-                    Page {projects.current_page} of {projects.last_page}
-                </Text>
-                <Button ml={4} colorScheme='purple'
-                    isDisabled={pageNumber === projects.last_page}
-                    onClick={() => setPageNumber(prev => prev + 1)}><IoIosArrowForward /></Button>
-            </Flex>
-
-        </div >
+        </Fragment>
     )
 }
 

@@ -70,12 +70,12 @@ function Deployments({ token }) {
                 <TabPanels>
                     <TabPanel>
 
-                        <Button my={5} onClick={handleDeployPortfolio} variant={'solid'} colorScheme={'green'}>
+                        <Button my={5} size={{ base: 'xs', md: 'sm' }} onClick={handleDeployPortfolio} variant={'solid'} colorScheme={'green'}>
                             Prefetch Portfolio Site
                         </Button>
 
                         <TableContainer>
-                            <Table variant='simple'>
+                            <Table fontSize={'sm'} variant='simple'>
                                 <TableCaption>Portfolio Deployment Logs</TableCaption>
                                 <Thead>
                                     <Tr>
@@ -110,7 +110,7 @@ function Deployments({ token }) {
                     </TabPanel>
                     <TabPanel>
 
-                        <Button my={5} onClick={handleDeployLabs} variant={'solid'} colorScheme={'green'}>Deploy SSG Labs</Button>
+                        <Button my={5} size={{ base: 'xs', md: 'sm' }} onClick={handleDeployLabs} variant={'solid'} colorScheme={'green'}>Deploy SSG Labs</Button>
 
 
                         <TableContainer>

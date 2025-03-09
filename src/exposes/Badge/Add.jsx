@@ -1,8 +1,6 @@
 // Core Modules
-import { useToast } from '@chakra-ui/react';
-import { IconContext } from 'react-icons';
-import { FiDelete } from "react-icons/fi";
-import { Box, Input, Button, Flex, Spacer } from '@chakra-ui/react';
+import { Fragment } from 'react';
+import { Input, Button } from '@chakra-ui/react';
 
 // API Modules
 import { PostBadge } from '../../api/badges/POST';
@@ -10,7 +8,16 @@ import { PostBadge } from '../../api/badges/POST';
 // Custom Hooks
 import useLocalStorage from '../../hooks/useLocalstorage';
 
+// Context
+import { useGlobalContext } from '../../contexts/GlobalContext';
+
+// Custom Components
+import CustomStepper from '../../components/Stepper';
+
+
 function AddBadge({ token }) {
+
+    const { toast } = useGlobalContext();
 
     const [content, setContent] = useLocalStorage('content-badge', {
         title: "",
@@ -21,8 +28,34 @@ function AddBadge({ token }) {
         date: ""
     });
 
-    const toast = useToast();
+    const handleClearContent = () => {
+        setContent({
+            title: "",
+            description: "",
+            company_name: "",
+            logo_url: "",
+            credential_url: "",
+            date: ""
+        });
+        localStorage.removeItem("content-badge");
+        toast({
+            title: `Content has been cleared`,
+            status: "success"
+        })
+    }
 
+    const steps = [
+        { title: 'Main Information', description: 'Add the general information of the Badge', childComponent: <MainContent token={token} content={content} setContent={setContent} /> },
+    ]
+
+    return (
+        <CustomStepper steps={steps} handleClearContent={handleClearContent} />
+    )
+}
+
+function MainContent({ token, content, setContent }) {
+
+    const { toast } = useGlobalContext();
 
     const handleSubmitBadge = async () => {
 
@@ -51,34 +84,8 @@ function AddBadge({ token }) {
         }
     }
 
-    const handleClearContent = () => {
-        setContent({
-            title: "",
-            description: "",
-            company_name: "",
-            logo_url: "",
-            credential_url: "",
-            date: ""
-        });
-        localStorage.removeItem("content-badge");
-        toast({
-            title: `Content has been cleared`,
-            status: "success"
-        })
-    }
-
     return (
-        <Box my={4}>
-            <Flex>
-                <></>
-                <Spacer />
-                <IconContext.Provider value={{ color: "#D91656", size: "2.5em" }}>
-                    <Button onClick={handleClearContent} p={0} variant={'ghost'} colorScheme='white'>
-                        <FiDelete />
-                    </Button>
-                </IconContext.Provider>
-            </Flex>
-
+        <Fragment>
             <label>Title</label>
             <Input borderRadius={'2xl'} size={'lg'} borderWidth={3} colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
                 my={2} placeholder='Title' onChange={(e) => setContent({ ...content, title: e.target.value })} value={content.title} />
@@ -102,7 +109,7 @@ function AddBadge({ token }) {
                 }}
                 value={content.date} />
             <Button my={4} colorScheme='purple' onClick={handleSubmitBadge}>Add Badge</Button>
-        </Box>
+        </Fragment>
     )
 }
 
