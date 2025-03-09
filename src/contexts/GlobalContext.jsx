@@ -20,19 +20,20 @@ export const GlobalContextProvider = ({ children }) => {
     // ** Toast Component
     const toast = useToast();
 
+    // ** Function to reset state
+    const resetState = () => {
+        setDataTable({});
+        setPageNumber(1);
+        setSearchParams({});
+    };
+
     const contextValue = {
         dataTable, setDataTable,
         pageNumber, setPageNumber,
         searchParams, setSearchParams,
-        isOpen, onOpen, onClose, toast
+        isOpen, onOpen, onClose, toast,
+        resetState
     };
-
-    // ** Reset the state when the component unmounts
-    useEffect(() => {
-        setDataTable({});
-        setPageNumber(1);
-        setSearchParams({});
-    }, [location.pathname]);
 
     return <GlobalContext.Provider value={contextValue}>{children}</GlobalContext.Provider>;
 };

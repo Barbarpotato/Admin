@@ -6,6 +6,7 @@ import { IconContext } from 'react-icons';
 import { GiHamburgerMenu } from "react-icons/gi";
 import { useRef, Fragment } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useGlobalContext } from '../contexts/GlobalContext';
 
 // Define navigation structure
 const navItems = [
@@ -42,12 +43,16 @@ const navItems = [
 ];
 
 function SideBar() {
+
+    const { resetState } = useGlobalContext();
+
     const location = useLocation();
     const navigate = useNavigate();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const NavButton = useRef();
 
     const handleLinkClick = (routeName) => {
+        resetState();
         navigate(routeName);
         onClose();
     };
