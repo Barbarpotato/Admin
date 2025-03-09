@@ -29,11 +29,9 @@ export const GlobalContextProvider = ({ children }) => {
 
     // ** Reset the state when the component unmounts
     useEffect(() => {
-        return () => {
-            setDataTable({});
-            setPageNumber(1);
-            setSearchParams({});
-        };
+        setDataTable({});
+        setPageNumber(1);
+        setSearchParams({});
     }, [location.pathname]);
 
     return <GlobalContext.Provider value={contextValue}>{children}</GlobalContext.Provider>;
