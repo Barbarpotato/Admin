@@ -25,6 +25,11 @@
   /* Slight grow effect */
 }
 
+.icon:hover {
+  transition: all 0.3s ease;
+  scale: 1.2;
+}
+
 .chakra-slide {
   background-color: #292b37 !important;
   color: #faf9ff !important;

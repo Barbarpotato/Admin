@@ -31,7 +31,7 @@ function TopBar() {
                 {
                     locationSegments.length === 0 &&
                     <BreadcrumbItem>
-                        <BreadcrumbLink color={'#ff79c6'} onClick={() => navigate('/')}>
+                        <BreadcrumbLink color={'#ff79c6'} onClick={() => window.location.reload()}>
                             <Heading size={"md"}>
                                 Deployments
                             </Heading>
@@ -47,7 +47,7 @@ function TopBar() {
 
                         return (
                             <BreadcrumbItem key={index}>
-                                <BreadcrumbLink color={'#ff79c6'} onClick={() => navigate(pathToSegment)}>
+                                <BreadcrumbLink color={'#ff79c6'} onClick={() => window.location.reload()}>
                                     <Heading size={"md"}>
                                         {splitString(segment)}
                                     </Heading>
@@ -60,7 +60,7 @@ function TopBar() {
             </Breadcrumb>
             <Spacer />
             <WrapItem>
-                <IoIosNotifications style={{ cursor: 'pointer' }} color={'#ff79c6'} size={24}
+                <IoIosNotifications style={{ cursor: 'pointer' }} className='icon' color={'#ff79c6'} size={24}
                     onClick={() => navigate('/Notifications')}
                 />
             </WrapItem>
@@ -68,6 +68,8 @@ function TopBar() {
                 <Popover>
                     <PopoverTrigger>
                         <Avatar
+                            size={'md'}
+                            className='icon'
                             cursor={'pointer'} name='Darmawan'
                             src='https://raw.githubusercontent.com/Barbarpotato/barbarpotato.github.io/c567a034bac07cae94577428a808e5af7513be4a/public/Avatar.svg' />
                     </PopoverTrigger>
