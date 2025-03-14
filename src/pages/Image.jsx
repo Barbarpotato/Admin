@@ -81,7 +81,7 @@ function CustomImage({ token, sourceFolder }) {
 
     const handleDelete = async (fileName) => {
         try {
-            await deleteFile('project-content', fileName, token);
+            await deleteFile(sourceFolder, fileName, token);
             toast({
                 title: 'Image deleted successfully',
                 status: 'success',
