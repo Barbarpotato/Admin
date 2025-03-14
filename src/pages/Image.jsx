@@ -59,7 +59,7 @@ function CustomImage({ token, sourceFolder }) {
         }
 
         try {
-            await uploadFile('project-content', file, token);
+            await uploadFile(sourceFolder, file, token);
             toast({
                 title: 'Image uploaded successfully',
                 status: 'success',
