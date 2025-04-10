@@ -62,9 +62,31 @@ export const fetchBlogById = async (blog_id) => {
     return response.json()
 }
 
+
 export const useDatablogById = (blog_id) => {
     return useQuery(`blog-${blog_id}`, () => fetchBlogById(blog_id), {
         cacheTime: 3600000,
         staleTime: 1800000
+    })
+}
+
+
+const fetchIndex = async () => {
+    const url = `${base_url()}/labs/index`;
+
+    const response = await fetch(url, {
+        method: 'GET',
+    })
+
+    if (!response.ok) throw new Error('Failed to fetch index')
+    return response.json()
+}
+
+
+export const useDataIndex = () => {
+    return useQuery(`index`, () => fetchIndex(), {
+        cacheTime: 3600000,
+        staleTime: 1800000,
+        select: (response) => response.map((item) => item.index)
     })
 }

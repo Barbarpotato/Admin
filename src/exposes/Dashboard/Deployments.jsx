@@ -3,6 +3,7 @@ import React from 'react'
 import {
     Tabs, TabList, TabPanels, Tab, TabPanel, Table, Button, useToast,
     Thead, Tbody, Tr, Th, Td, TableCaption, TableContainer,
+    MenuButton, Menu, MenuList, MenuItem
 } from '@chakra-ui/react'
 
 // Custom Components
@@ -12,11 +13,13 @@ import Loading from '../../components/Loading';
 import { DeployPortfolio } from '../../api/webhook/portfolio.js';
 import { DeployLabs } from '../../api/webhook/labs.js';
 import { useDeploymentLabsStatus, useDeploymentPortfolioStatus } from '../../api/deployments/GET.js';
+import { useDataIndex } from '../../api/labs/GET.js';
 
 function Deployments({ token }) {
 
     const { data: labs, isLoading: labsIsLoading, isError: labsIsError } = useDeploymentLabsStatus(token);
     const { data: portfolio, isLoading: portfolioIsLoading, isError: portfolioIsError } = useDeploymentPortfolioStatus(token);
+    const { data: index, isLoading: indexIsLoading, isError: indexIsError } = useDataIndex(token);
 
     // ** chakra staff
     const toast = useToast();
@@ -37,10 +40,10 @@ function Deployments({ token }) {
         }
     }
 
-    const handleDeployLabs = async () => {
+    const handleDeployLabs = async (index) => {
         try {
             await DeployPortfolio(token);
-            await DeployLabs(token);
+            await DeployLabs(token, index);
             toast({
                 title: `Deployment In Progress`,
                 status: "success",
@@ -54,8 +57,7 @@ function Deployments({ token }) {
         }
     }
 
-    if (labsIsLoading || portfolioIsLoading) return <Loading />
-
+    if (labsIsLoading || portfolioIsLoading || indexIsLoading) return <Loading />
 
     return (
         <>
@@ -110,7 +112,20 @@ function Deployments({ token }) {
                     </TabPanel>
                     <TabPanel>
 
-                        <Button my={5} size={{ base: 'xs', md: 'sm' }} onClick={handleDeployLabs} variant={'solid'} colorScheme={'green'}>Deploy SSG Labs</Button>
+                        <Menu >
+                            <MenuButton my={5} size={{ base: 'xs', md: 'sm' }} as={Button} variant={'solid'} colorScheme={'green'}>
+                                Deploy SSG Labs
+                            </MenuButton>
+                            <MenuList bg={"#292b37"}>
+                                {
+                                    index?.map((item, index) => (
+                                        <MenuItem bg={"#292b37"} key={index} onClick={() => handleDeployLabs(item)}>
+                                            Labs-{item}
+                                        </MenuItem>
+                                    ))
+                                }
+                            </MenuList>
+                        </Menu>
 
 
                         <TableContainer>

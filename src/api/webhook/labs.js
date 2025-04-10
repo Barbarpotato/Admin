@@ -1,9 +1,9 @@
 import base_url from "../index.js";
 
-export const DeployLabs = async (token) => {
+export const DeployLabs = async (token, index) => {
     if (!token) throw new Error('No token provided')
 
-    const url = `${base_url()}/webhook/deploy-labs`;
+    const url = `${base_url()}/webhook/deploy-labs?index=${index}`;
 
     const response = await fetch(url, {
         method: 'PUT',
