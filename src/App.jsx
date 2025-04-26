@@ -24,7 +24,6 @@ import CustomImage from "./pages/Image";
 
 // Exposes Page
 import Deployments from "./exposes/Dashboard/Deployments";
-import Metrics from "./exposes/Dashboard/Metrics";
 import AddBlog from './exposes/Blog/Add';
 import BlogOverview from './exposes/Blog/Overview';
 import AddProject from './exposes/Projects/Add';
@@ -72,7 +71,6 @@ const App = () => {
               {/* Protected Routes */}
               <Route element={<Guard />}>
                 <Route path="/" element={<Base><Deployments token={token} /></Base>} />
-                <Route path="/MetricsLogs" element={<Base><Metrics token={token} /></Base>} />
                 <Route path="/ProjectOverview" element={<Base><ProjectOverview token={token} /></Base>} />
                 <Route path="/ImageProject" element={<Base><CustomImage token={token} sourceFolder={"project-content"} /></Base>} />
                 <Route path="/AddProject" element={<Base><AddProject token={token} /></Base>} />

@@ -1,5 +1,5 @@
 // context/MyContext.js
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { useDisclosure, useToast } from '@chakra-ui/react';
 
 

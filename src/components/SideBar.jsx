@@ -13,8 +13,7 @@ const navItems = [
     {
         section: 'Dashboard',
         links: [
-            { label: 'Deployments', path: '/' },
-            { label: 'Metrics & Logs', path: '/MetricsLogs' },
+            { label: 'Deployments', path: '/' }
         ],
     },
     {

@@ -15,8 +15,7 @@ const fetchBlogs = async ({ queryKey }) => {
     if (slug) params.append("slug", slug);
     if (blog_id) params.append("blog_id", blog_id);
 
-
-    const url = `${base_url()}/labs?${params.toString()}`;
+    const url = `${base_url()}/labs/search?${params.toString()}`;
 
     const response = await fetch(url, {
         method: 'GET',
