@@ -1,9 +1,9 @@
 // Core Modules
 import { Fragment, useState, useEffect } from 'react'
 import {
-    Box, Tabs, TabList, TabPanels, Tab, TabPanel, Input,
-    Button, useToast, Text, Image, Heading
-} from '@chakra-ui/react'
+    Input, Box, Tag, TagLabel, TagCloseButton, Spinner, Wrap, Button, Image, Text,
+    WrapItem, useToast, Tabs, TabList, TabPanels, Tab, TabPanel, Heading
+} from "@chakra-ui/react";
 import ReactQuill from 'react-quill';
 
 // Context
@@ -13,7 +13,8 @@ import { useGlobalContext } from '../../contexts/GlobalContext';
 import CustomStepper from '../../components/Stepper';
 
 // API Modules
-import { PostBlog } from "../../api/labs/POST"
+import { PostBlog, PostBlogTags } from "../../api/labs/POST"
+import { useTagSearch } from '../../api/labs/GET';
 
 // CSS
 import 'react-quill/dist/quill.snow.css';
@@ -49,11 +50,15 @@ function AddBlog({ token }) {
         localStorage.setItem("content", newContent);
     };
 
+    const [tags, setTags] = useState([]);
+
     const handleClearContent = () => {
         updateHeaderContent({ title: '', short_description: '', image: '', image_alt: '' });
         updateContent('');
+        setTags([]);
         localStorage.removeItem("headerContent");
         localStorage.removeItem("content");
+        localStorage.removeItem("tags");
         toast({
             title: `Content has been cleared`,
             status: "success"
@@ -114,7 +119,12 @@ function AddBlog({ token }) {
     const steps = [
         { title: 'General Information', description: 'Add the general information of the blog', childComponent: <HeaderContent headerContent={headerContent} updateHeaderContent={updateHeaderContent} /> },
         { title: 'Main Content', description: 'Add the main content of the blog', childComponent: <MainContent content={content} updateContent={updateContent} /> },
-        { title: 'Review & Publish', description: 'Cross-Check the content before publish', childComponent: <ReviewContent token={token} headerContent={headerContent} content={content} updateHeaderContent={updateHeaderContent} updateContent={updateContent} /> },
+        { title: 'Tags Content', description: 'Add the tags content of the blog', childComponent: <TagsContent tags={tags} setTags={setTags} /> },
+        {
+            title: 'Review & Publish', description: 'Cross-Check the content before publish', childComponent: <ReviewContent token={token} headerContent={headerContent}
+                content={content} tags={tags} handleClearContent={handleClearContent}
+            />
+        },
     ]
 
     return (
@@ -141,6 +151,7 @@ function HeaderContent({ headerContent, updateHeaderContent }) {
         </Box>
     )
 }
+
 
 function MainContent({ content, updateContent }) {
 
@@ -219,62 +230,189 @@ function MainContent({ content, updateContent }) {
     )
 }
 
-function ReviewContent({ token, headerContent, content, updateHeaderContent, updateContent }) {
+
+function TagsContent({ tags, setTags }) {
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 1000);
+        return () => clearTimeout(handler);
+    }, [search]);
+
+    const { data: tagOptions = [], isLoading } = useTagSearch(debouncedSearch);
+
+    const handleAddTag = (tag) => {
+        if (tag && !tags.includes(tag)) {
+            const updatedTags = [...tags, tag];
+            setTags(updatedTags);
+            localStorage.setItem("tags", JSON.stringify(updatedTags));
+        }
+        setSearch("");
+    };
+
+    const handleRemoveTag = (tagToRemove) => {
+        const updatedTags = tags.filter(tag => tag !== tagToRemove);
+        setTags(updatedTags);
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedTags));
+    };
+
+    const canCreateNewTag = debouncedSearch && !tagOptions.includes(debouncedSearch) && !tags.includes(debouncedSearch);
+
+    useEffect(() => {
+        const storedTags = localStorage.getItem("tags");
+        if (storedTags) {
+            try {
+                setTags(JSON.parse(storedTags));
+            } catch (err) {
+                console.error("Failed to parse tags from localStorage", err);
+            }
+        }
+    }, [setTags]);
+
+    return (
+        <Box my={4}>
+            <Input
+                placeholder="Search or create new tag..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                borderRadius="2xl"
+                size="lg"
+                borderWidth={3}
+                borderColor="#536189"
+                focusBorderColor="#ff79c6"
+                my={2}
+            />
+
+            {isLoading ? (
+                <Spinner size="sm" my={2} />
+            ) : (
+                debouncedSearch && (
+                    <Wrap my={2}>
+                        {tagOptions.map((tag, index) => (
+                            <WrapItem key={index}>
+                                <Tag
+                                    size="md"
+                                    borderRadius="full"
+                                    variant="solid"
+                                    colorScheme="purple"
+                                    cursor="pointer"
+                                    onClick={() => handleAddTag(tag)}
+                                >
+                                    <TagLabel>{tag}</TagLabel>
+                                </Tag>
+                            </WrapItem>
+                        ))}
+
+                        {canCreateNewTag && (
+                            <WrapItem>
+                                <Button
+                                    size="xs"
+                                    borderRadius="full"
+                                    colorScheme="green"
+                                    onClick={() => handleAddTag(debouncedSearch)}
+                                >
+                                    Create New Tag "{debouncedSearch}"
+                                </Button>
+                            </WrapItem>
+                        )}
+                    </Wrap>
+                )
+            )}
+
+            <Wrap mt={4}>
+                {tags.map((tag, index) => (
+                    <WrapItem key={index}>
+                        <Tag
+                            size="md"
+                            borderRadius="full"
+                            variant="subtle"
+                            colorScheme="purple"
+                        >
+                            <TagLabel>{tag}</TagLabel>
+                            <TagCloseButton onClick={() => handleRemoveTag(tag)} />
+                        </Tag>
+                    </WrapItem>
+                ))}
+            </Wrap>
+        </Box>
+    );
+}
+
+
+
+function ReviewContent({ token, headerContent, content, tags, handleClearContent }) {
 
     const toast = useToast()
 
     const handleSubmitBlog = async () => {
         try {
 
-            // ** validaate the header content
+            // ** Validate the header content
             if (!headerContent.title || !headerContent.short_description || !headerContent.image || !headerContent.image_alt) {
                 toast({
                     title: `General Information is required`,
                     status: "error",
-                })
+                });
                 return;
             }
 
-            // ** validate the main content
+            // ** Validate the main content
             if (!content) {
                 toast({
                     title: `Main Content is required`,
                     status: "error",
-                })
+                });
+                return;
+            }
+
+            if (!tags || tags.length <= 0) {
+                toast({
+                    title: `Tags is required`,
+                    status: "error",
+                });
                 return;
             }
 
             // ** Wrap all <pre> tags with a <div> wrapper
-            // ** Wrap all <pre> tags with <div> and wrap inner content with <code>
             const wrappedContent = content.replace(
                 /<pre\s+class="ql-syntax"\s+spellcheck="false">([\s\S]*?)<\/pre>/g,
                 `<div><pre><code>$1</code></pre></div>`
             );
 
-            await PostBlog({ ...headerContent, description: wrappedContent }, token);
+            // ** Post the blog content
+            const response = await PostBlog({ ...headerContent, description: wrappedContent }, token);
+
+            if (!response) {
+                toast({
+                    title: `Something went wrong`,
+                    status: "error",
+                });
+                return;
+            }
+
+            // ** Create tags for this blog
+            await PostBlogTags(response.blog_id, tags, token); // Assuming response contains the blog ID
+
             toast({
                 title: `Successfully added Blog Data`,
                 status: "success",
-            })
+            });
 
-            // **
-            // -- clear the state
-            updateHeaderContent({ title: '', short_description: '', image: '', image_alt: '' })
-            updateContent('')
-
-            // **
-            // -- clear the localstorage
-            localStorage.removeItem("headerContent");
-            localStorage.removeItem("content");
+            // ** Clear the state
+            handleClearContent();
 
         } catch (err) {
-            console.error(err)
+            console.error(err);
             toast({
                 title: `Something went wrong`,
                 status: "error",
-            })
+            });
         }
-    }
+    };
+
 
     if (!content) {
         return (

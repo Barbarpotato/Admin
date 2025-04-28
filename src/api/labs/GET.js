@@ -89,3 +89,29 @@ export const useDataIndex = () => {
         select: (response) => response.map((item) => item.index)
     })
 }
+
+
+const fetchTagSearch = async (query = "") => {
+    const url = `${base_url()}/labs/tags?title=${query}`;
+
+    const response = await fetch(url, {
+        method: 'GET',
+    })
+
+    if (!response.ok) throw new Error('Failed to fetch index')
+    return response.json()
+}
+
+
+export const useTagSearch = (searchTerm) => {
+    return useQuery(
+        ['tags', searchTerm],
+        () => fetchTagSearch(searchTerm),
+        {
+            enabled: !!searchTerm, // only fetch when searchTerm exists
+            cacheTime: 3600000,
+            staleTime: 1800000,
+            select: (response) => response.map(item => item.name)
+        }
+    );
+};
