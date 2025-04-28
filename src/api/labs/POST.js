@@ -4,8 +4,6 @@ export const PostBlog = async (body, token) => {
 
     if (!token) throw new Error('No token provided')
 
-    console.log(token)
-
     const url = `${base_url()}/labs`;
 
     const response = await fetch(url, {

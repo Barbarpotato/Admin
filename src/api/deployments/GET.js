@@ -35,21 +35,26 @@ const fetchDeploymentProjectsStatus = async ({ queryKey }) => {
 };
 
 const fetchDeploymentLabsStatus = async ({ queryKey }) => {
-    const [, token] = queryKey;
-    const url = `${base_url()}/deployments/labs`;
+    const [, token, index] = queryKey;
+
+    if (!index) {
+        throw new Error('Index is required to fetch lab deployments');
+    }
+
+    const url = `${base_url()}/deployments/labs${index ? `?index=${index}` : ''}`;
 
     const response = await fetch(url, {
         method: 'GET',
         headers: {
-            "Authorization": `Bearer ${token}`
-        }
+            "Authorization": `Bearer ${token}`,
+        },
     });
 
     if (!response.ok) throw new Error('Failed to fetch deployment labs');
     return response.json();
 };
 
-export const useDeploymentPortfolioStatus = (token) => {
+export const useDeploymentPortfolioStatus = (token,) => {
     return useQuery(['deployment-portfolio', token], fetchDeploymentPortfolioStatus, {
         cacheTime: 3600000,
         staleTime: 1800000,
@@ -60,23 +65,27 @@ export const useDeploymentPortfolioStatus = (token) => {
                 ...item
             }));
         },
-        enabled: !!token, // Only run query if token is available
+        enabled: !!token  // Only run query if both token and index are available
     });
 };
 
-export const useDeploymentLabsStatus = (token) => {
-    return useQuery(['deployment-labs', token], fetchDeploymentLabsStatus, {
-        cacheTime: 3600000,
-        staleTime: 1800000,
-        refetchInterval: 10000, // Poll every 10s
-        select: (data) => {
-            return data.map((item, index) => ({
-                number: index + 1,
-                ...item
-            }));
-        },
-        enabled: !!token, // Only run query if token is available
-    });
+export const useDeploymentLabsStatus = (token, index) => {
+    return useQuery(
+        ['deployment-labs', token, index],
+        fetchDeploymentLabsStatus,
+        {
+            cacheTime: 3600000,
+            staleTime: 1800000,
+            refetchInterval: 10000, // Poll every 10s
+            select: (data) => {
+                return data.map((item, index) => ({
+                    number: index + 1,
+                    ...item
+                }));
+            },
+            enabled: !!token && !!index, // Only run query if token and index are available
+        }
+    );
 };
 
 export const useDeploymentProjectsStatus = (token) => {

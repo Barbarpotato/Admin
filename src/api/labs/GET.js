@@ -86,7 +86,7 @@ export const useDataIndex = () => {
     return useQuery(`index`, () => fetchIndex(), {
         cacheTime: 3600000,
         staleTime: 1800000,
-        select: (response) => response.map((item) => item.index)
+        select: (response) => response.map((item) => item.name)
     })
 }
 
