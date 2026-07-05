@@ -5,38 +5,29 @@ import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 // Context
 import { useGlobalContext } from '../contexts/GlobalContext';
-import { p } from 'framer-motion/client';
 
 
-function Pagination({ paginationData = [{ lastPage: 0, currentPage: 0 }] }) {
-
-    // validate the pagination data
-    if (!paginationData) {
-        throw new Error('No pagination data provided');
-    }
-
-    if (!paginationData.current_page) {
-        throw new Error('No current page provided');
-    }
-
-    if (!paginationData.last_page) {
-        throw new Error('No last page provided');
-    }
+function Pagination({ paginationData }) {
 
     const { pageNumber, setPageNumber } = useGlobalContext();
+
+    // ** fall back gracefully instead of crashing the page when data hasn't
+    // ** arrived yet or the backend omits pagination metadata (e.g. empty result set)
+    const currentPage = paginationData?.current_page ?? pageNumber ?? 1;
+    const lastPage = paginationData?.last_page ?? currentPage;
 
     return (
         <Fragment>
 
             <Flex alignItems={'center'} my={8} justifyContent={'center'}>
                 <Spacer />
-                <Button size={{ base: 'xs', 'md': 'sm' }} mr={4} colorScheme='purple' isDisabled={pageNumber === 1}
+                <Button size={{ base: 'xs', 'md': 'sm' }} mr={4} colorScheme='purple' isDisabled={currentPage <= 1}
                     onClick={() => setPageNumber(prev => prev - 1)}><IoIosArrowBack /></Button>
                 <Text>
-                    Page {paginationData.current_page} of {paginationData.last_page}
+                    Page {currentPage} of {lastPage}
                 </Text>
                 <Button size={{ base: 'xs', 'md': 'sm' }} ml={4} colorScheme='purple'
-                    isDisabled={pageNumber === paginationData.last_page}
+                    isDisabled={currentPage >= lastPage}
                     onClick={() => setPageNumber(prev => prev + 1)}><IoIosArrowForward /></Button>
             </Flex>
 

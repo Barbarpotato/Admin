@@ -1,3 +1,8 @@
+:root {
+  --font-playfair: 'Playfair Display', Georgia, serif;
+  --font-outfit: 'Outfit', system-ui, -apple-system, sans-serif;
+}
+
 .sidebar-toggle-button {
   opacity: 70%;
   z-index: 1;
@@ -6,8 +11,8 @@
   left: 20px;
   width: 40px;
   height: 40px;
-  background-color: #ff79c6;
-  color: white;
+  background-color: #866bab;
+  color: #faf9ff;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -21,6 +26,7 @@
 
 .sidebar-toggle-button:hover {
   opacity: 100%;
+  background-color: #cc7bc9;
   transform: scale(1.1);
   /* Slight grow effect */
 }
@@ -44,8 +50,50 @@
 .nav-link:hover {
   cursor: pointer;
   padding-left: 4px;
-  border-left: #ff79c6 4px solid;
-  color: #ff79c6 !important;
+  border-left: #cc7bc9 4px solid;
+  color: #cc7bc9 !important;
+}
+
+/* Sidebar navigation items (shared by persistent desktop sidebar and mobile drawer) */
+.sidebar-nav-link {
+  display: block;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #faf9ff;
+  font-family: var(--font-outfit);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.sidebar-nav-link:hover {
+  background-color: rgba(134, 107, 171, 0.15);
+  transform: translateY(-2px);
+}
+
+.sidebar-nav-link.active {
+  color: #bd93f9;
+  font-weight: 600;
+}
+
+.sidebar-nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 12px;
+  width: 12px;
+  height: 3px;
+  border-radius: 2px;
+  background-color: #bd93f9;
+}
+
+.sidebar-nav-link.mobile.active {
+  background-color: rgba(134, 107, 171, 0.20);
+}
+
+.sidebar-nav-link.mobile:hover {
+  transform: translateX(4px);
 }
 
 .lighting-effect-pink {
@@ -55,7 +103,7 @@
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-outfit);
   background-color: #292b37 !important;
   color: #faf9ff !important;
 }

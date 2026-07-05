@@ -1,12 +1,11 @@
 // Core Modules
 import {
-    Box, Input, Button, TagCloseButton,
-    Link, Heading, HStack, Tag, Textarea
+    Box, Input, Button, TagCloseButton, IconButton, Divider,
+    Link, Heading, HStack, Flex, Spacer, Tag, Textarea
 } from '@chakra-ui/react'
 import { Fragment, useState } from 'react'
-
-// Custom Components
-import CustomStepper from '../../components/Stepper';
+import { FiDelete } from "react-icons/fi";
+import { useNavigate } from 'react-router-dom';
 
 // Context
 import { useGlobalContext } from '../../contexts/GlobalContext';
@@ -14,13 +13,22 @@ import { useGlobalContext } from '../../contexts/GlobalContext';
 // Custom Hooks
 import useLocalStorage from '../../hooks/useLocalstorage';
 
-// API Modules
-import { PostProject } from '../../api/projects/POST';
+// Custom Components
+import FormSection from '../../components/FormSection';
+import ImageUrlPicker from '../../components/ImageUrlPicker';
 
+const dividerStyle = { my: 6, borderColor: 'rgba(134, 107, 171, 0.25)' };
+
+
+const inputStyle = {
+    borderRadius: '2xl', size: 'lg', borderWidth: 2, colorScheme: 'purple',
+    borderColor: '#866bab', focusBorderColor: '#cc7bc9', my: 2,
+}
 
 function AddProject({ token }) {
 
     const { toast } = useGlobalContext();
+    const navigate = useNavigate();
 
     const [headerContent, setHeaderContent] = useLocalStorage('headerContent-project', {
         heading: "",
@@ -29,7 +37,14 @@ function AddProject({ token }) {
         skills_url: ""
     });
 
-    const [content, setContent] = useState(localStorage.getItem("content-project") || "");
+    const [content, setContentState] = useState(() => localStorage.getItem("content-project") || "");
+
+    // ** persisted as a plain string (not JSON) to stay compatible with how
+    // ** Projects/Overview.jsx's "Copy Content to Add Site" writes this key
+    const updateContent = (value) => {
+        setContentState(value);
+        localStorage.setItem("content-project", value);
+    };
 
     const [imageUrl, setImageUrl] = useLocalStorage('imageUrl-project', []);
     const [tempImageList, setTempImageList] = useLocalStorage('tempImageList-project', []);
@@ -38,7 +53,7 @@ function AddProject({ token }) {
         setHeaderContent({ heading: "", text: "", image_url: "", skills_url: "" });
         setImageUrl([]);
         setTempImageList([]);
-        setContent('');
+        setContentState('');
         localStorage.removeItem("headerContent-project");
         localStorage.removeItem("content-project");
         localStorage.removeItem("imageUrl-project");
@@ -46,56 +61,59 @@ function AddProject({ token }) {
         toast({ title: `Content has been cleared`, status: "success" })
     }
 
-    const steps = [
-        { title: 'Header', description: 'Add the general information of the Project', childComponent: <HeaderContent headerContent={headerContent} setHeaderContent={setHeaderContent} /> },
-        { title: 'Main', description: 'Describe Your Project', childComponent: <MainContent content={content} setContent={setContent} /> },
-        { title: 'Image', description: 'Upload Your Project Image using Link', childComponent: <ImageContent imageUrl={imageUrl} setImageUrl={setImageUrl} tempImageList={tempImageList} setTempImageList={setTempImageList} /> },
-        {
-            title: 'Review & Publish', description: 'Cross-Check the content before publish', childComponent: <ReviewContent token={token} headerContent={headerContent}
-                content={content} imageUrl={imageUrl} handleClearContent={handleClearContent} setHeaderContent={setHeaderContent}
-                setContent={setContent} setImageUrl={setImageUrl} setTempImageList={setTempImageList} />
-        },
-    ]
-
-    return (
-        <CustomStepper steps={steps} handleClearContent={handleClearContent} />
-    )
-}
-
-function HeaderContent({ headerContent, setHeaderContent }) {
-    return (
-        <Box my={4}>
-            <label>Heading</label>
-            <Input borderRadius={'2xl'} size={'lg'} borderWidth={3} colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
-                my={2} placeholder='Heading' onChange={e => setHeaderContent({ ...headerContent, heading: e.target.value })} value={headerContent.heading} />
-            <label>Text</label>
-            <Input borderRadius={'2xl'} size={'lg'} borderWidth={3} colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
-                my={2} placeholder='Text' onChange={e => setHeaderContent({ ...headerContent, text: e.target.value })} value={headerContent.text} />
-            <label>Image URL</label>
-            <Input borderRadius={'2xl'} size={'lg'} borderWidth={3} colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
-                my={2} placeholder='Image URL'
-                onChange={e => setHeaderContent({ ...headerContent, image_url: e.target.value })} value={headerContent.image_url} />
-            <label>Skills URL</label>
-            <Input borderRadius={'2xl'} size={'lg'} borderWidth={3} colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
-                my={2} placeholder='Skills URL. Example: https://skillicons.dev/icons?i=bootstrap,docker,express,mysql,javascript,githubactions,github,vercel,prisma'
-                onChange={e => setHeaderContent({ ...headerContent, skills_url: e.target.value })} value={headerContent.skills_url} />
-        </Box>
-    )
-}
-
-function MainContent({ content, setContent }) {
     return (
         <Fragment>
-            <label>Main Content</label>
-            <Textarea
-                value={content} onChange={(e) => setContent(e.target.value)}
-                borderRadius={'2xl'} size={'lg'} borderWidth={3} colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
-                my={2} type="text" placeholder="Your Project Description..." rows={8} />
+            <Flex mb={4} align={'center'}>
+                <Heading size={'lg'} fontFamily={'var(--font-playfair)'} fontStyle={'italic'} fontWeight={700} color={'#faf9ff'}>
+                    Add Project
+                </Heading>
+                <Spacer />
+                <IconButton
+                    aria-label='Clear content'
+                    icon={<FiDelete />}
+                    size={'sm'} variant={'ghost'} colorScheme='red'
+                    onClick={handleClearContent}
+                />
+            </Flex>
+
+            <Box maxW={'720px'} mx="auto">
+                <FormSection title='Header' description='Add the general information of the Project'>
+                    <label>Heading</label>
+                    <Input {...inputStyle} placeholder='Heading' onChange={e => setHeaderContent({ ...headerContent, heading: e.target.value })} value={headerContent.heading} />
+                    <label>Text</label>
+                    <Input {...inputStyle} placeholder='Text' onChange={e => setHeaderContent({ ...headerContent, text: e.target.value })} value={headerContent.text} />
+                    <label>Image URL</label>
+                    <Input {...inputStyle} placeholder='Image URL'
+                        onChange={e => setHeaderContent({ ...headerContent, image_url: e.target.value })} value={headerContent.image_url} />
+                    <label>Skills URL</label>
+                    <Input {...inputStyle} placeholder='Skills URL. Example: https://skillicons.dev/icons?i=bootstrap,docker,express,mysql,javascript,githubactions,github,vercel,prisma'
+                        onChange={e => setHeaderContent({ ...headerContent, skills_url: e.target.value })} value={headerContent.skills_url} />
+                </FormSection>
+
+                <Divider {...dividerStyle} />
+
+                <FormSection title='Main Content' description='Describe Your Project'>
+                    <Textarea
+                        value={content} onChange={(e) => updateContent(e.target.value)}
+                        borderRadius={'2xl'} size={'lg'} borderWidth={2} colorScheme='purple' borderColor={"#866bab"} focusBorderColor={"#cc7bc9"}
+                        my={2} type="text" placeholder="Your Project Description..." rows={8} />
+                </FormSection>
+
+                <Divider {...dividerStyle} />
+
+                <FormSection title='Image' description='Upload Your Project Image using Link'>
+                    <ImageContent token={token} imageUrl={imageUrl} setImageUrl={setImageUrl} tempImageList={tempImageList} setTempImageList={setTempImageList} />
+                </FormSection>
+
+                <Button mt={6} size={'md'} w={"100%"} bg={'#866bab'} color={'#faf9ff'} _hover={{ bg: '#cc7bc9' }} onClick={() => navigate('/PreviewProject')}>
+                    Preview
+                </Button>
+            </Box>
         </Fragment>
     )
 }
 
-function ImageContent({ imageUrl, setImageUrl, tempImageList, setTempImageList }) {
+function ImageContent({ token, imageUrl, setImageUrl, tempImageList, setTempImageList }) {
 
     const [tempImageUrl, setTempImageUrl] = useState('');
 
@@ -120,12 +138,13 @@ function ImageContent({ imageUrl, setImageUrl, tempImageList, setTempImageList }
     }
 
     return (
-        <Box my={4}>
+        <Box>
             <HStack wrap={"wrap"}>
                 {
                     tempImageList.length > 0 && tempImageList.map((imageUrl, index) => {
                         return (
                             <Tag
+                                key={index}
                                 size={"lg"}
                                 borderRadius='full'
                                 variant='solid'
@@ -139,96 +158,13 @@ function ImageContent({ imageUrl, setImageUrl, tempImageList, setTempImageList }
                 }
             </HStack>
             <label>Image URL</label>
-            <Input onChange={e => setTempImageUrl(e.target.value)} value={tempImageUrl}
-                borderRadius={'2xl'} size={'lg'} borderWidth={3}
-                colorScheme='purple' borderColor={"#536189"} focusBorderColor={"#ff79c6"}
-                my={2} placeholder='Image URL' />
-            <Button colorScheme='purple' size={"md"} onClick={handleAddedImageElement}>Add Image</Button>
+            <ImageUrlPicker
+                folder='project-content' token={token}
+                value={tempImageUrl} onChange={setTempImageUrl}
+                placeholder='Search uploaded images or paste an Image URL'
+            />
+            <Button bg={'#866bab'} color={'#faf9ff'} _hover={{ bg: '#cc7bc9' }} size={"md"} onClick={handleAddedImageElement}>Add Image</Button>
         </Box>
-    )
-}
-
-function ReviewContent({ token, headerContent, content, imageUrl, setHeaderContent, setContent, setImageUrl, setTempImageList }) {
-
-    const { toast } = useGlobalContext();
-
-    const handleSubmitProject = async () => {
-        try {
-
-            // ** validaate the header content
-            if (!headerContent.heading || !headerContent.text || !headerContent.image_url || !headerContent.skills_url) {
-                toast({ title: `General Information is required`, status: "error", })
-                return;
-            }
-
-            // ** validate the main content
-            if (!content) {
-                toast({ title: `Main Content is required`, status: "error", })
-                return;
-            }
-
-            if (imageUrl.length <= 0) {
-                toast({ title: `Image is required`, status: "error", })
-                return;
-            }
-
-            await PostProject({
-                heading: headerContent.heading,
-                text: headerContent.text,
-                imageUrl: headerContent.image_url,
-                skillsUrl: headerContent.skills_url,
-                htmlContent: content,
-                htmlImage: imageUrl.join('')
-            }, token);
-
-            setHeaderContent({ heading: "", text: "", image_url: "", skills_url: "" });
-            setImageUrl([]);
-            setTempImageList([]);
-            setContent('');
-            localStorage.removeItem("headerContent-project");
-            localStorage.removeItem("content-project");
-            localStorage.removeItem("imageUrl-project");
-            localStorage.removeItem("tempImageList-project");
-
-            toast({ title: `Successfully added Project Data`, status: "success", })
-
-        } catch (err) {
-            console.error(err)
-            toast({ title: `Something went wrong`, status: "error", })
-        }
-    }
-
-    if (!content) {
-        return (
-            <Heading size={"md"} color={"red"} textAlign={'center'}>Oops! There is no content at the moment</Heading>
-        )
-    }
-
-    if (content.length <= 300) {
-        return (
-            <Heading size={"md"} color={"red"} textAlign={'center'}>Your Content is too short to be published</Heading>
-        )
-    }
-
-    return (
-        <Fragment>
-            <Box mx="auto" w={'100%'} display="flex" justifyContent="center" >
-                <Box width={{ base: '65%', sm: '35%' }}>
-                    <Heading fontSize={'xx-large'}>{headerContent.heading}</Heading>
-                    <Heading fontSize={'large'}>{headerContent.text}</Heading>
-                    <pre style={{
-                        marginBottom: '10px', textAlign: 'justify', whiteSpace: 'pre-wrap',
-                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica',
-                    }}>
-                        {content}
-                    </pre>
-                    <Heading my={5} size={"md"}>User Interface (UI)</Heading>
-                    <Box id='image' dangerouslySetInnerHTML={{ __html: imageUrl.join('') }}>
-                    </Box>
-                </Box>
-            </Box>
-            <Button size={'sm'} w={"100%"} colorScheme='purple' onClick={handleSubmitProject}>Publish Project</Button>
-        </Fragment >
     )
 }
 

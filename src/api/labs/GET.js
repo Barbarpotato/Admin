@@ -3,12 +3,12 @@ import base_url from "../index.js";
 
 const fetchBlogs = async ({ queryKey }) => {
 
-    const [_key, { page, title, slug, blog_id }] = queryKey;
+    const [_key, { page, per_page, title, slug, blog_id }] = queryKey;
 
     // Construct query parameters dynamically
     const params = new URLSearchParams({
         page: page.toString(),
-        per_page: 8,
+        per_page: per_page.toString(),
     });
 
     if (title) params.append("title", title);
@@ -26,9 +26,9 @@ const fetchBlogs = async ({ queryKey }) => {
 }
 
 // Custom hook for fetching blogs
-export const useDatablogs = ({ page, title = "", slug = "", blog_id = "" }) => {
+export const useDatablogs = ({ page, per_page = 8, title = "", slug = "", blog_id = "" }) => {
     return useQuery({
-        queryKey: ["blogs", { page, title, slug, blog_id }],
+        queryKey: ["blogs", { page, per_page, title, slug, blog_id }],
         queryFn: fetchBlogs,
         cacheTime: 3600000,
         staleTime: 1800000,

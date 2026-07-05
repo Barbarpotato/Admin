@@ -1,13 +1,13 @@
 import base_url from "../index.js";
 
-export const uploadFile = async (folder, file, token) => {
+export const uploadFile = async (folder, file, token, fileName) => {
     if (!token) throw new Error('No token provided');
     if (!file) throw new Error('No file uploaded');
 
     const url = `${base_url()}/storage/${folder}`;
 
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('image', file, fileName || file.name);
 
     const response = await fetch(url, {
         method: 'POST',

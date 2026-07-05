@@ -1,46 +1,40 @@
 import { Table, Thead, Tbody, Tr, Th, Td, TableContainer, Text } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
-import CustomMenu from './Menu'
 
 /**
  * CustomTable Component
- * 
- * A flexible and reusable table component built with Chakra UI, designed to render dynamic data, 
- * with optional actions for each row. This component supports customizable column headers and data rows.
+ *
+ * A flexible and reusable table component built with Chakra UI, designed to render dynamic data,
+ * with an optional actions column for each row. This component supports customizable column headers and data rows.
  *
  * @param {Array} ColumnNames - Array of strings representing the column headers for the table.
  * @param {Array} Rows - Array of objects, where each object corresponds to a row in the table.
  *                          Each key-value pair in an object represents a column and its data.
- * @param {string} [KeyAction] - A key from the Rows objects that identifies each row uniquely. 
- *                               Used to associate actions from the `ActionList`.
- * @param {Array} [ActionList] - Array of action items to be rendered in the last column of each row.
- *                               If provided, an extra column with a dropdown menu for actions will appear.
- * 
+ * @param {string} [KeyAction] - A key from the Rows objects that identifies each row uniquely.
+ *                               Passed to `renderActions` for the row.
+ * @param {Function} [renderActions] - Given the row's `KeyAction` value, returns the JSX to render
+ *                                     in the last column (e.g. a row of action buttons).
+ *
  * @returns {JSX.Element} A responsive table component with data and optional actions.
  *
  * @example
- * <CustomTable 
+ * <CustomTable
  *   ColumnNames={['Name', 'Age', 'City']}
  *   Rows={[
  *     { name: 'John', age: 28, city: 'New York' },
  *     { name: 'Jane', age: 32, city: 'San Francisco' }
  *   ]}
  *   KeyAction="name"
- *   ActionList={['Edit', 'Delete']}
+ *   renderActions={(name) => <Button onClick={() => handleEdit(name)}>Edit</Button>}
  * />
  *
  * @note
  * - If `ColumnNames` or `Rows` are empty, a message indicating "No data found!" will be displayed.
- * - If `KeyAction` is not provided but `ActionList` contains items, an error message indicating "Invalid parameters Action!" will be displayed.
  */
-function CustomTable({ ColumnNames = [], RowsAttr = [], Rows = [], KeyAction = "", ActionList = [] }) {
+function CustomTable({ ColumnNames = [], RowsAttr = [], Rows = [], KeyAction = "", renderActions }) {
 
     if (ColumnNames.length == 0 || Rows.length == 0) return (
         <Text color={"red"}>No data found!</Text>
-    )
-
-    if (!KeyAction && ActionList.length > 0) return (
-        <Text color={"red"}>Invalid parameters Action!</Text>
     )
 
     const [RowsState, setRowsState] = useState([]);
@@ -95,7 +89,7 @@ function CustomTable({ ColumnNames = [], RowsAttr = [], Rows = [], KeyAction = "
                                     ))
                                 }
                                 {
-                                    ActionList.length > 0 && <Td><CustomMenu MenuItemList={ActionList} KeyAction={row[KeyAction]} /></Td>
+                                    renderActions && <Td>{renderActions(row[KeyAction])}</Td>
                                 }
                             </Tr>
                         ))

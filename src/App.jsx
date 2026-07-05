@@ -1,7 +1,7 @@
 // Core Modules
 import ReactDOM from "react-dom/client";
 import React, { Fragment, Suspense } from "react";
-import { Box, ChakraProvider } from "@chakra-ui/react";
+import { Box, Flex, ChakraProvider } from "@chakra-ui/react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Routes, HashRouter, Navigate } from "react-router-dom";
 
@@ -26,11 +26,12 @@ import CustomImage from "./pages/Image";
 import Deployments from "./exposes/Dashboard/Deployments";
 import AddBlog from './exposes/Blog/Add';
 import BlogOverview from './exposes/Blog/Overview';
+import BlogDetail from './exposes/Blog/Detail';
+import BlogPreview from './exposes/Blog/Preview';
 import AddProject from './exposes/Projects/Add';
 import ProjectOverview from './exposes/Projects/Overview';
-import AddBadge from './exposes/Badge/Add';
-import BadgeOverview from './exposes/Badge/Overview';
-import Notification from './exposes/Notification';
+import ProjectDetail from './exposes/Projects/Detail';
+import ProjectPreview from './exposes/Projects/Preview';
 
 // CSS
 import "./index.css";
@@ -40,18 +41,20 @@ const queryClient = new QueryClient();
 
 const Base = ({ useStyle = true, children }) => {
   return (
-    <Fragment>
+    <Flex align={'flex-start'}>
       <Sidebar />
-      <TopBar />
-      <Suspense >
-        <Box boxShadow={useStyle ? 'dark-lg' : ''}
-          rounded={useStyle ? 'md' : ''}
-          p={useStyle ? { base: 3, md: 10 } : ''}
-          m={useStyle ? { base: 3, md: 10 } : ''}>
-          {children}
-        </Box>
-      </Suspense>
-    </Fragment>
+      <Box flex={1} minW={0}>
+        <TopBar />
+        <Suspense >
+          <Box boxShadow={useStyle ? 'dark-lg' : ''}
+            rounded={useStyle ? 'md' : ''}
+            p={useStyle ? { base: 3, md: 10 } : ''}
+            m={useStyle ? { base: 3, md: 10 } : ''}>
+            {children}
+          </Box>
+        </Suspense>
+      </Box>
+    </Flex>
   );
 };
 
@@ -72,14 +75,15 @@ const App = () => {
               <Route element={<Guard />}>
                 <Route path="/" element={<Base><Deployments token={token} /></Base>} />
                 <Route path="/ProjectOverview" element={<Base><ProjectOverview token={token} /></Base>} />
+                <Route path="/ProjectDetail" element={<Base><ProjectDetail /></Base>} />
                 <Route path="/ImageProject" element={<Base><CustomImage token={token} sourceFolder={"project-content"} /></Base>} />
                 <Route path="/AddProject" element={<Base><AddProject token={token} /></Base>} />
+                <Route path="/PreviewProject" element={<Base><ProjectPreview token={token} /></Base>} />
                 <Route path="/Blog" element={<Base><BlogOverview token={token} /></Base>} />
+                <Route path="/BlogDetail/:blog_id" element={<Base><BlogDetail /></Base>} />
                 <Route path="/ImageBlog" element={<Base><CustomImage token={token} sourceFolder={"blog-content"} /></Base>} />
                 <Route path="/AddBlog" element={<Base><AddBlog token={token} /></Base>} />
-                <Route path="/Badge" element={<Base><BadgeOverview token={token} /></Base>} />
-                <Route path="/AddBadge" element={<Base><AddBadge token={token} /></Base>} />
-                <Route path="/Notifications" element={<Base><Notification token={token} /></Base>} />
+                <Route path="/PreviewBlog" element={<Base><BlogPreview token={token} /></Base>} />
               </Route>
 
               {/* Redirect all unknown routes to /Login */}

@@ -1,30 +1,50 @@
-import React from 'react';
 import {
-    Tabs, TabList, TabPanels, Tab, TabPanel, Table, Button, useToast,
-    Thead, Tbody, Tr, Th, Td, TableCaption, TableContainer,
-    MenuButton, Menu, MenuList, MenuItem
+    Heading, Button, useToast, Menu, MenuButton, MenuList, MenuItem, Flex, Box, Text,
+    AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter,
+    AlertDialogHeader, AlertDialogOverlay, useDisclosure
 } from '@chakra-ui/react';
+import { useRef, useState } from 'react';
+import { FiFolder, FiFileText, FiGlobe, FiCpu } from 'react-icons/fi';
 
 import Loading from '../../components/Loading';
+import SectionCard from '../../components/SectionCard';
+import ActivityHeatmap from '../../components/ActivityHeatmap';
 import { DeployPortfolio } from '../../api/webhook/portfolio.js';
 import { DeployLabs } from '../../api/webhook/labs.js';
 import { DeployProjects } from '../../api/webhook/project.js';
-import { useDeploymentLabsStatus, useDeploymentPortfolioStatus, useDeploymentProjectsStatus } from '../../api/deployments/GET.js';
-import { useDataIndex } from '../../api/labs/GET.js';
+import { useDataIndex, useDatablogs } from '../../api/labs/GET.js';
+import { useDataProjects } from '../../api/projects/GET.js';
+
+const buttonStyle = { bg: '#866bab', color: '#faf9ff', _hover: { bg: '#cc7bc9' } };
+
+function StatTile({ label, value, icon }) {
+    return (
+        <Box bg={'#383a4a'} borderRadius={'xl'} boxShadow={'md'} p={5} flex={1} minW={'140px'}>
+            <Flex align={'center'} gap={2} mb={1}>
+                <Box color={'#cc7bc9'} fontSize={'lg'} aria-hidden="true">{icon}</Box>
+                <Text fontSize={'sm'} color={'#c0c0c0'}>{label}</Text>
+            </Flex>
+            <Heading size={'lg'} fontFamily={'var(--font-playfair)'} fontStyle={'italic'} color={'#cc7bc9'}>{value}</Heading>
+        </Box>
+    );
+}
 
 function Deployments({ token }) {
-    const [selectedLabsIndex, setSelectedLabsIndex] = React.useState("6b86b273ff34f"); // State for selected index
+    const { data: index, isLoading: indexIsLoading } = useDataIndex();
 
-    // API hooks
-    const { data: labs, isLoading: labsIsLoading, isError: labsIsError } = useDeploymentLabsStatus(token, selectedLabsIndex);
-    const { data: portfolio, isLoading: portfolioIsLoading, isError: portfolioIsError } = useDeploymentPortfolioStatus(token);
-    const { data: projects, isLoading: projectsIsLoading, isError: projectsIsError } = useDeploymentProjectsStatus(token);
-    const { data: index, isLoading: indexIsLoading, isError: indexIsError } = useDataIndex(token);
+    // ** total projects: minimal fetch just to read the total off the response
+    const { data: projectsMeta } = useDataProjects(1, 1);
 
-    // Chakra toast notifications
+    // ** blogs: fetched in bulk so the same response also feeds the activity heatmap
+    const { data: blogsMeta } = useDatablogs({ page: 1, per_page: 100 });
+
     const toast = useToast();
 
-    // Deploy functions
+    // ** pending deploy action, confirmed via the alert dialog before it actually runs
+    const [pendingAction, setPendingAction] = useState(null); // { type: 'portfolio' | 'projects' | 'labs', index? }
+    const { isOpen: isConfirmOpen, onOpen: onConfirmOpen, onClose: onConfirmClose } = useDisclosure();
+    const cancelDeployRef = useRef(null);
+
     const handleDeployPortfolio = async () => {
         try {
             await DeployPortfolio(token);
@@ -41,9 +61,9 @@ function Deployments({ token }) {
         }
     };
 
-    const handleDeployLabs = async (index) => {
+    const handleDeployLabs = async (labsIndex) => {
         try {
-            await DeployLabs(token, index);
+            await DeployLabs(token, labsIndex);
             toast({
                 title: `Deployment In Progress`,
                 status: "success",
@@ -73,204 +93,103 @@ function Deployments({ token }) {
         }
     };
 
-    // Loading state
-    if (labsIsLoading || portfolioIsLoading || projectsIsLoading || indexIsLoading) return <Loading />;
+    const requestDeploy = (action) => {
+        setPendingAction(action);
+        onConfirmOpen();
+    };
+
+    const handleConfirmDeploy = async () => {
+        if (pendingAction?.type === 'portfolio') await handleDeployPortfolio();
+        if (pendingAction?.type === 'projects') await handleDeployProjects();
+        if (pendingAction?.type === 'labs') await handleDeployLabs(pendingAction.index);
+
+        setPendingAction(null);
+        onConfirmClose();
+    };
+
+    if (indexIsLoading) return <Loading />;
+
+    const totalProjects = projectsMeta?.total_projects ?? projectsMeta?.total ?? projectsMeta?.data?.length ?? 0;
+    const totalBlogs = blogsMeta?.total_blogs ?? 0;
+
+    const activityDates = (blogsMeta?.data ?? []).map((blog) => blog.timestamp).filter(Boolean);
+
+    const confirmMessage = pendingAction?.type === 'portfolio'
+        ? 'Trigger a fresh prefetch of the Portfolio site?'
+        : pendingAction?.type === 'projects'
+            ? 'Trigger a deployment for the Projects site?'
+            : pendingAction?.type === 'labs'
+                ? `Deploy SSG for "Labs-${pendingAction.index}"?`
+                : '';
 
     return (
         <>
-            <Tabs colorScheme='purple'>
-                <TabList>
-                    <Tab>Portfolio</Tab>
-                    <Tab>Labs</Tab>
-                    <Tab>Projects</Tab>
-                </TabList>
+            <Heading size={'lg'} fontFamily={'var(--font-playfair)'} fontStyle={'italic'} fontWeight={700} color={'#faf9ff'} mb={6}>
+                Dashboard
+            </Heading>
 
-                <TabPanels>
-                    <TabPanel>
-                        <Button
-                            my={5}
-                            size={{ base: 'xs', md: 'sm' }}
-                            onClick={handleDeployPortfolio}
-                            variant={'solid'}
-                            colorScheme={'green'}
-                        >
-                            Prefetch Portfolio Site
-                        </Button>
+            <Flex gap={4} mb={6} wrap={'wrap'}>
+                <StatTile label='Total Projects' value={totalProjects} icon={<FiFolder />} />
+                <StatTile label='Total Blogs' value={totalBlogs} icon={<FiFileText />} />
+            </Flex>
 
-                        <TableContainer>
-                            <Table fontSize={'sm'} variant='simple'>
-                                <TableCaption>Portfolio Deployment Logs</TableCaption>
-                                <Thead>
-                                    <Tr>
-                                        <Th>Created At</Th>
-                                        <Th>Updated At</Th>
-                                        <Th>Event</Th>
-                                        <Th>Status</Th>
-                                        <Th>Conclusion</Th>
-                                        <Th>URL</Th>
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    {portfolio?.map((item, idx) => (
-                                        <Tr key={idx}>
-                                            <Td>{item.created_at}</Td>
-                                            <Td>{item.updated_at}</Td>
-                                            <Td>{item.event}</Td>
-                                            <Td>{item.status}</Td>
-                                            <Td style={{ color: item.conclusion === "success" ? "green" : "red" }}>
-                                                {item.conclusion}
-                                            </Td>
-                                            <Td>
-                                                <a style={{ textDecoration: "underline" }} href={item.html_url} target="_blank" rel="noopener noreferrer">
-                                                    Link
-                                                </a>
-                                            </Td>
-                                        </Tr>
-                                    ))}
-                                </Tbody>
-                            </Table>
-                        </TableContainer>
-                    </TabPanel>
+            <SectionCard title='Blog Activity' description='Days with a published or updated blog post, over the last ~4 months' icon={<FiFileText />}>
+                <ActivityHeatmap dates={activityDates} />
+            </SectionCard>
 
-                    <TabPanel>
-                        {/* New dropdown to select Labs index */}
-                        <Menu>
-                            <MenuButton
-                                my={5}
-                                size={{ base: 'xs', md: 'sm' }}
-                                as={Button}
-                                variant={'solid'}
-                                colorScheme={'dark'}
-                            >
-                                Select Labs Index
-                            </MenuButton>
-                            <MenuList bg={"#292b37"}>
-                                {index?.map((item, idx) => (
-                                    <MenuItem
-                                        bg={"#292b37"}
-                                        key={idx}
-                                        onClick={() => {
-                                            setSelectedLabsIndex(item); // Update selectedLabsIndex
-                                            // Trigger the fetch for the new selected index
-                                        }}
-                                    >
-                                        Labs-{item}
-                                    </MenuItem>
-                                ))}
-                            </MenuList>
+            <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={'stretch'}>
+                <SectionCard title='Portfolio' description='Trigger a fresh prefetch of the portfolio site' icon={<FiGlobe />} flex={1} mb={0}>
+                    <Button size={{ base: 'xs', md: 'sm' }} onClick={() => requestDeploy({ type: 'portfolio' })} {...buttonStyle}>
+                        Prefetch Portfolio Site
+                    </Button>
+                </SectionCard>
 
-                            {/* Existing dropdown for deploying Labs */}
-                            <Menu>
-                                <MenuButton
-                                    my={5}
-                                    ml={"auto"}
-                                    size={{ base: 'xs', md: 'sm' }}
-                                    as={Button}
-                                    variant={'solid'}
-                                    colorScheme={'green'}
+                <SectionCard title='Labs' description='Pick a labs index to deploy' icon={<FiCpu />} flex={1} mb={0}>
+                    <Menu>
+                        <MenuButton size={{ base: 'xs', md: 'sm' }} as={Button} {...buttonStyle}>
+                            Deploy SSG Labs
+                        </MenuButton>
+                        <MenuList bg={"#292b37"}>
+                            {index?.map((item, idx) => (
+                                <MenuItem
+                                    bg={"#292b37"}
+                                    key={idx}
+                                    onClick={() => requestDeploy({ type: 'labs', index: item })}
                                 >
-                                    Deploy SSG Labs
-                                </MenuButton>
-                                <MenuList bg={"#292b37"}>
-                                    {index?.map((item, idx) => (
-                                        <MenuItem
-                                            bg={"#292b37"}
-                                            key={idx}
-                                            onClick={() => {
-                                                setSelectedLabsIndex(item); // Set selected index
-                                                handleDeployLabs(item); // Deploy Labs with selected index
-                                            }}
-                                        >
-                                            Labs-{item}
-                                        </MenuItem>
-                                    ))}
-                                </MenuList>
-                            </Menu>
+                                    Labs-{item}
+                                </MenuItem>
+                            ))}
+                        </MenuList>
+                    </Menu>
+                </SectionCard>
 
-                        </Menu>
+                <SectionCard title='Projects' description='Trigger a deployment for the projects site' icon={<FiFolder />} flex={1} mb={0}>
+                    <Button size={{ base: 'xs', md: 'sm' }} onClick={() => requestDeploy({ type: 'projects' })} {...buttonStyle}>
+                        Deploy Projects
+                    </Button>
+                </SectionCard>
+            </Flex>
 
-                        <TableContainer>
-                            <Table variant='simple'>
-                                <TableCaption>Labs Deployment Logs</TableCaption>
-                                <Thead>
-                                    <Tr>
-                                        <Th>Created At</Th>
-                                        <Th>Updated At</Th>
-                                        <Th>Event</Th>
-                                        <Th>Status</Th>
-                                        <Th>Conclusion</Th>
-                                        <Th>URL</Th>
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    {labs?.map((item, idx) => (
-                                        <Tr key={idx}>
-                                            <Td>{item.created_at}</Td>
-                                            <Td>{item.updated_at}</Td>
-                                            <Td>{item.event}</Td>
-                                            <Td>{item.status}</Td>
-                                            <Td style={{ color: item.conclusion === "success" ? "green" : "red" }}>
-                                                {item.conclusion}
-                                            </Td>
-                                            <Td>
-                                                <a style={{ textDecoration: "underline" }} href={item.html_url} target="_blank" rel="noopener noreferrer">
-                                                    Link
-                                                </a>
-                                            </Td>
-                                        </Tr>
-                                    ))}
-                                </Tbody>
-                            </Table>
-                        </TableContainer>
-                    </TabPanel>
+            <AlertDialog isOpen={isConfirmOpen} leastDestructiveRef={cancelDeployRef} onClose={onConfirmClose} isCentered>
+                <AlertDialogOverlay>
+                    <AlertDialogContent bg={'#383a4a'} color={'#faf9ff'}>
+                        <AlertDialogHeader fontSize="lg" fontWeight="bold">Confirm deployment</AlertDialogHeader>
 
-                    <TabPanel>
-                        <Button
-                            my={5}
-                            size={{ base: 'xs', md: 'sm' }}
-                            onClick={handleDeployProjects}
-                            variant={'solid'}
-                            colorScheme={'green'}
-                        >
-                            Deploy Projects
-                        </Button>
+                        <AlertDialogBody color={'#c0c0c0'}>
+                            {confirmMessage}
+                        </AlertDialogBody>
 
-                        <TableContainer>
-                            <Table fontSize={'sm'} variant='simple'>
-                                <TableCaption>Projects Deployment Logs</TableCaption>
-                                <Thead>
-                                    <Tr>
-                                        <Th>Created At</Th>
-                                        <Th>Updated At</Th>
-                                        <Th>Event</Th>
-                                        <Th>Status</Th>
-                                        <Th>Conclusion</Th>
-                                        <Th>URL</Th>
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    {projects?.map((item, idx) => (
-                                        <Tr key={idx}>
-                                            <Td>{item.created_at}</Td>
-                                            <Td>{item.updated_at}</Td>
-                                            <Td>{item.event}</Td>
-                                            <Td>{item.status}</Td>
-                                            <Td style={{ color: item.conclusion === "success" ? "green" : "red" }}>
-                                                {item.conclusion}
-                                            </Td>
-                                            <Td>
-                                                <a style={{ textDecoration: "underline" }} href={item.html_url} target="_blank" rel="noopener noreferrer">
-                                                    Link
-                                                </a>
-                                            </Td>
-                                        </Tr>
-                                    ))}
-                                </Tbody>
-                            </Table>
-                        </TableContainer>
-                    </TabPanel>
-                </TabPanels>
-            </Tabs>
+                        <AlertDialogFooter>
+                            <Button ref={cancelDeployRef} onClick={onConfirmClose} variant={'ghost'} color={'#c0c0c0'}>
+                                Cancel
+                            </Button>
+                            <Button {...buttonStyle} onClick={handleConfirmDeploy} ml={3}>
+                                Deploy
+                            </Button>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialogOverlay>
+            </AlertDialog>
         </>
     );
 }
